@@ -192,6 +192,7 @@ article::after {
                         <img class="mw-100" src="<?php echo e(asset('upload/images/logo/'.config('siteSetting.logo'))); ?>" alt="logo">
                     </a>
                 </div>
+       
                 <div class="col-md-7">
                     <form action="<?php echo e(route('home.category')); ?>" method="get" class="w-100 d-flex align-items-center bb2 rounded yb">
                         <input type="text" id="searchKey" value="<?php echo e(Request::get('q')); ?>" name="q" class="searchKey w-100 p-3 rounded-l" placeholder="What are you looking for?">

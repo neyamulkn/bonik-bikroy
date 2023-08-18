@@ -38,19 +38,18 @@ class HomeController extends Controller
             return response()->json(['html'=>$view]);
         }
         $data['slider'] = Slider::where('status', 1)->where('type', 'homepage')->orderBy('position', 'asc')->first();
-        
 
         return view('frontend.home')->with($data);
     }
 
     //product show by category
-    public function category(Request $request, string $catslug=null, string $location=null)
+    public function category(Request $request, string $catslug='', string $location=null)
     {
         $data['products'] = $data['banners'] = $data['product_variations'] = $data['category'] = $data['filterCategories'] = $data['brands'] = [];
         $ads_duration = SiteSetting::where('type', 'free_ads_limit')->first();
         $ads_duration =  Carbon::parse(now())->subDays($ads_duration->value2);
  
-        $category_id = $state_id = $city_id = null;
+        $category_id = $state_id = $city_id = 0;
         $keyword = $request->q;
         
 
@@ -78,7 +77,7 @@ class HomeController extends Controller
             if($data['state']){
                 $city_id = $data['state']->id;
             }else{
-                $data['state'] = State::with('get_city')->where(function ($query) use ($catslug, $location) {
+                $data['state'] = State::with(['get_city' => function($query) { $query->withCount('productsByCity'); }])->where(function ($query) use ($catslug, $location) {
                     $query->where('slug', $catslug)->orWhere('slug', $location);
                 })->orderBy('name', 'asc')->withCount('productsByState')->first();
                 $state_id = ($data['state']) ? $data['state']->id : null;
@@ -361,7 +360,7 @@ class HomeController extends Controller
                 $perPage = $request->perPage - $promoteAds;
             }
 
-            $products->selectRaw('id,title,slug,price,brand_id,category_id,category_id,state_id,views,sale_type, user_id, feature_image,created_at,approved');
+            $products->selectRaw('id,title,slug,price,brand_id,category_id,category_id,state_id,views,post_type,sale_type, user_id, feature_image,created_at,approved');
             
             $data['product_variations'] = ProductAttribute::withCount(['get_productVariationDetails', 'get_productVariationDetails as get_product_variation_details_count' => function($query){
                 $query->where('get_product_variation_details_count', '>', 0);
@@ -405,7 +404,7 @@ class HomeController extends Controller
             
             $data['products'] = $products->paginate($perPage);
 
-        $data['get_ads'] = Addvertisement::whereIn('page', ['category', 'all'])->inRandomOrder()->where('status', 1)->get();
+        $data['get_ads'] = Addvertisement::whereIn('page', ['/', 'all'])->inRandomOrder()->where('status', 1)->get();
 
         $data['get_category'] = Category::with(['get_subcategory' => function($query){ $query->withCount('productsBySubcategory');} ])->withCount(['productsByCategory' => function($query) use ($product_id){
                     $query->whereIn('id', $product_id);
@@ -420,7 +419,6 @@ class HomeController extends Controller
         ->withCount(['productsByState' => function($query) use ($product_id){
             $query->whereIn('id', $product_id);
         }])->orderBy('position', 'desc')->get();
-
 
         if($request->filter){
             return view('frontend.post-filter')->with($data);

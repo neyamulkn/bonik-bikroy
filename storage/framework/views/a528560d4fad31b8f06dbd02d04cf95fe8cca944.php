@@ -61,14 +61,14 @@ opacity: 0.7;
                     <ol class="carousel-indicators list-inline position-static mx-4 mt-0">
                         <li class="list-inline-item w-100 h-auto active">
                             <a id="carousel-selector-0" class="selected" data-slide-to="0" data-target="#custCarousel">
-                                <img src="<?php echo e(asset('upload/images/product/'.$post->feature_image)); ?>" class="img-fluid">
+                                <img style="width: 100px" src="<?php echo e(asset('upload/images/product/'.$post->feature_image)); ?>" >
                             </a>
                         </li>
                         <?php $__currentLoopData = $post->get_galleryImages; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $galleryImage): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
 
                         <li class="list-inline-item w-100 h-auto">
                             <a id="carousel-selector-1" data-slide-to="1" data-target="#custCarousel">
-                                <img src="<?php echo e(asset('upload/images/product/gallery/'.$galleryImage->image_path)); ?>" class="img-fluid">
+                                <img style="width: 100px" src="<?php echo e(asset('upload/images/product/gallery/'.$galleryImage->image_path)); ?>">
                             </a>
                         </li>
                         <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
@@ -106,7 +106,7 @@ opacity: 0.7;
                 <?php endif; ?>
                 
                 <?php $__currentLoopData = $attributes; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $attribute): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
-                <div class="col-md-6 col-lg-6">
+                <div class="col-md-6 col-lg-6 p-1">
                     <input type="hidden" name="attribute[<?php echo e($attribute->id); ?>]" value="<?php echo e($attribute->name); ?>">
                 
                     <div class="form-group">
@@ -290,14 +290,12 @@ opacity: 0.7;
                 method:"get",
                 success:function(data){
                     if(data){
-                         $('#promote_demo').html(data);
+                        $('#promote_demo').html(data);
                     }else{
                         $("#promote_demo").html('');
                     }
                 }
             });
-
-
         }
     </script>
 

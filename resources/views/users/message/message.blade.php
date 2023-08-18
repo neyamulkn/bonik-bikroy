@@ -72,8 +72,8 @@ if($conversation->sender_id == Auth::id()){
 <button class="sendMessage" onclick="sendMessage('{{$conversation->id}}')" type="button"><i class="fas fa-paper-plane"></i></button>
 @else
     @if($conversation->block_user == Auth::id())
-        <p>You've blocked message. You can't message In this chat and you won't receive their message.</p>
-        <a href="{{route('blockUser', $conversation->id)}}">Unblock</a>
+        <p>You've blocked message. You can't message In this chat and you won't receive their message. <a href="{{route('blockUser', $conversation->id)}}">Unblock</a></p>
+        
     @else
     <h3>You have been blocked so you can't send any message.</h3>
     @endif

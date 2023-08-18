@@ -3616,7 +3616,7 @@ textarea.form-control {
   font-size: 14px;
   line-height: 18px;
   border-radius: 6px;
-  padding: 0px 5px;
+  padding: 5px 5px;
   color: var(--text);
   background: var(--white);
   white-space: nowrap;

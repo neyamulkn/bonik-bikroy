@@ -50,6 +50,8 @@
     .sidebar-offcanvas #close-sidebar { display: block;}
 }
 
+.advertising{margin: 10px 0px;}
+
 .sticky-conent{  position: sticky;
     position: -webkit-sticky;
     top: 70px; }

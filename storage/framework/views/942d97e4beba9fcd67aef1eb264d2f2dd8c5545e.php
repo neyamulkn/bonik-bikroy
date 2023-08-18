@@ -201,7 +201,7 @@
 </script>
 
 <script type="text/javascript">
-   function sendMessage(productOrConId){
+    function sendMessage(productOrConId){
     clearInterval(timeSet);
     var message = $('.message').val();
    

@@ -48,6 +48,13 @@ class AddvertisementController extends Controller
             $image = $request->file('image');
             $image_name = time().$image->getClientOriginalName();
             $image->move(public_path('upload/marketing'), $image_name);
+        }
+
+        $mobile_image = null;
+        if($request->hasFile('mobile_image')) {
+            $image = $request->file('mobile_image');
+            $mobile_image = time().$image->getClientOriginalName();
+            $image->move(public_path('upload/marketing'), $mobile_image);
 
         }
         $created_by = Auth::user()->id;
@@ -57,7 +64,9 @@ class AddvertisementController extends Controller
             'adsType' => $request->adsType,
             'page' => $request->page,
             'position' => $request->position,
+            'mobile_position' => $request->mobile_position,
             'image' => $image_name,
+            'mobile_image' => $mobile_image,
             'redirect_url' => $request->redirect_url,
             'clickBtn' => $request->clickBtn,
             'add_code' =>  $request->add_code,

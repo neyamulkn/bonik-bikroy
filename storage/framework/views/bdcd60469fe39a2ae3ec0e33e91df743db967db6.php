@@ -33,9 +33,34 @@
 <?php $__env->stopSection(); ?>
 
 <?php $__env->startSection('content'); ?>
+<?php
+    $get_ads = App\Models\Addvertisement::whereIn('page', ['/', 'all'])->inRandomOrder()->where('status', 1)->get();
 
+    $topOfContent = $middleOfContent = $bottomOfContent = $sitebarTop = $sitebarMiddle = $sitebarBottom = null ;
+    foreach ($get_ads as $ads){
+        if($ads->position == 'top-content'){
+            $topOfContent = ($ads->adsType == 'image') ? '<a  href="'.$ads->redirect_url.'"><img src="'.asset('upload/marketing/'.$ads->image).'" alt=""></a>' : $ads->add_code;
+        }elseif($ads->position == 'middle-content'){
+            $middleOfContent = ($ads->adsType == 'image') ? '<a  href="'.$ads->redirect_url.'"><img src="'.asset('upload/marketing/'.$ads->image).'" alt=""></a>' : $ads->add_code;
+        }elseif($ads->position == 'bottom-content'){
+            $bottomOfContent = ($ads->adsType == 'image') ? '<a  href="'.$ads->redirect_url.'"><img src="'.asset('upload/marketing/'.$ads->image).'" alt=""></a>' : $ads->add_code;
+        }elseif($ads->position == 'sidebar-top'){
+            $sitebarTop = '<div class="sidebar">'. ($ads->adsType == 'image' ? '<a  href="'.$ads->redirect_url.'"><img src="'.asset('upload/marketing/'.$ads->image).'" alt=""></a>' : $ads->add_code) . '</div>';
+        }elseif($ads->position == 'sidebar-middle'){
+            $sitebarMiddle = '<div class="sidebar">'. ($ads->adsType == 'image' ? '<a  href="'.$ads->redirect_url.'"><img src="'.asset('upload/marketing/'.$ads->image).'" alt=""></a>' : $ads->add_code) . '</div>';
+        }elseif($ads->position == 'sidebar-bottom'){
+            $sitebarBottom = '<div class="sidebar">'. ($ads->adsType == 'image' ? '<a href="'.$ads->redirect_url.'"><img src="'.asset('upload/marketing/'.$ads->image).'" alt=""></a>' : $ads->add_code) . '</div>' ; 
+        }else{
+            echo '';
+        }
+    }
+    ?>
 <div class="">
     <div class="container px-0">
+        <div class="advertising">
+            <?php echo $topOfContent; ?>
+
+        </div>
         <div class="row">
             <div class="col-md-3 px-0 d-flex flex-column justify-content-between hidden-xs">
                 <div>
@@ -191,12 +216,18 @@
                 </div>
             </div>
             <div class="col-md-2 hidden-xs p-0 bg-white mb-3">
-                <img class="w-100 sticky-top" src="<?php echo e(asset('upload/images/banners.png')); ?>" alt="banner">
+                <div class="advertising w-100 sticky-top">
+                <?php echo $sitebarTop; ?> </div>
+        </div>
             </div>
             <div class="col-md-12 p-2 bg-white mb-3">
-                <img class="w-100" src="<?php echo e(asset('upload/images/ads.png')); ?>" alt="banner">
+                <div class="advertising">
+                    <?php echo $bottomOfContent; ?>
+
+                </div>
             </div>
         </div>
+
     </div>
 </div>
 <?php $__env->stopSection(); ?>

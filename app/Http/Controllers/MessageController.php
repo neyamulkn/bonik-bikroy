@@ -165,8 +165,11 @@ class MessageController extends Controller
                     $messages = $this->helperMessage($conversation, $sender_id);
                 }
 
-                return view('users.message.message')->with(compact('conversation','messages'));
-            
+                if($request->send == "direct"){
+                    return redirect()->route("user.message", [Auth::user()->username, $product->slug]);
+                }
+
+                return view('users.message.message')->with(compact('conversation','messages'));       
         }
 
         return false;

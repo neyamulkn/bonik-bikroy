@@ -1,39 +1,39 @@
-@extends('layouts.frontend')
-@section('title', 'Seller Verification')
 
-@section('css')
-<link href="{{asset('assets')}}/node_modules/dropify/dist/css/dropify.min.css" rel="stylesheet" type="text/css" />
-@endsection
+<?php $__env->startSection('title', 'Seller Verification'); ?>
 
-@section('content')
+<?php $__env->startSection('css'); ?>
+<link href="<?php echo e(asset('assets')); ?>/node_modules/dropify/dist/css/dropify.min.css" rel="stylesheet" type="text/css" />
+<?php $__env->stopSection(); ?>
+
+<?php $__env->startSection('content'); ?>
 
 <!-- Main Container  -->
 <div class="container bg-white px-0">
     
     <h2 class="text-center py-3 border-bottom mb-3">MEMBERSHIP REGISTRATION</h2>
     
-    <form action="{{ route('verifyAccount') }}" method="post" enctype="multipart/form-data" data-parsley-validate>
-		@csrf
+    <form action="<?php echo e(route('verifyAccount')); ?>" method="post" enctype="multipart/form-data" data-parsley-validate>
+		<?php echo csrf_field(); ?>
 		<div class="row">
 		    <div class="col-md-4 col-sm-12">
 		        <label class="required">Your Photo</label>                         
-				<input type="file" @if($user->owner_photo) data-default-file="{{asset('upload/users/'.$user->owner_photo)}}" @else required @endif data-allowed-file-extensions="jpg jpeg png gif" data-max-file-size="5M"  class="dropify" name="photo">
+				<input type="file" <?php if($user->owner_photo): ?> data-default-file="<?php echo e(asset('upload/users/'.$user->owner_photo)); ?>" <?php else: ?> required <?php endif; ?> data-allowed-file-extensions="jpg jpeg png gif" data-max-file-size="5M"  class="dropify" name="photo">
 		    </div>
 		    <div class="col-md-4 col-sm-12">
 		        <div class="form-group">
 					<label for="name" class="control-label required">Full Name</label>
-					<input type="text" required class="form-control" id="name" placeholder="Full Name" value="{{ $user->name }}" name="name">
+					<input type="text" required class="form-control" id="name" placeholder="Full Name" value="<?php echo e($user->name); ?>" name="name">
 				</div>
 				<div class="form-group">
 					<label for="shop_name" class="control-label required">Organization name</label>
-					<input type="text" required class="form-control" id="shop_name" placeholder="Organization name" value="{{ $user->shop_name }}" name="shop_name">
+					<input type="text" required class="form-control" id="shop_name" placeholder="Organization name" value="<?php echo e($user->shop_name); ?>" name="shop_name">
 				</div>
 		    </div>
 		    <div class="col-md-4 col-sm-12">
 		        <label for="mobile" class="control-label required w-100">Mobile Number</label>
 				<div class="form-group" id="moreMobile" style="position: relative;">
 					
-					<input type="text" disabled class="form-control" id="mobile" placeholder="Enter Mobile" value="{{ $user->mobile }}" name="mobile">
+					<input type="text" disabled class="form-control" id="mobile" placeholder="Enter Mobile" value="<?php echo e($user->mobile); ?>" name="mobile">
 					<span class="adjust-field">
                         <label onclick="moreMobile()"><small>Chnage Number</small></label>
                     </span>
@@ -41,7 +41,7 @@
 				<label for="input-email" class="control-label required w-100">E-Mail Address</label>
 				<div class="form-group" id="moreEmail" style="position: relative;">
 					
-					<input type="email" disabled class="form-control" id="input-email" placeholder="E-Mail" value="{{ $user->email }}" name="email">
+					<input type="email" disabled class="form-control" id="input-email" placeholder="E-Mail" value="<?php echo e($user->email); ?>" name="email">
 					<span class="adjust-field">
                         <label onclick="moreEmail()"><small>Chnage Email</small></label>
                     </span>
@@ -53,11 +53,11 @@
 		    <div class="col-md-6 col-sm-12">
 				<div class="form-group mb-1">
 					<span class="required mb-2 d-block">About your shop</span>
-					<textarea required class="form-control" id="address" placeholder="For example: #road:2, #sector: 3, Dhaka-1215" name="address">{{ $user->address }}</textarea>
+					<textarea required class="form-control" id="address" placeholder="For example: #road:2, #sector: 3, Dhaka-1215" name="address"><?php echo e($user->address); ?></textarea>
 				</div>
 				<div class="form-group mb-0">
 					<span class="required mb-2 d-block">Business address</span>
-					<textarea required class="form-control" id="address" placeholder="For example: #road:2, #sector: 3, Dhaka-1215" name="address">{{ $user->address }}</textarea>
+					<textarea required class="form-control" id="address" placeholder="For example: #road:2, #sector: 3, Dhaka-1215" name="address"><?php echo e($user->address); ?></textarea>
 				</div>
 			</div>
 			<div class="col-md-6 col-sm-12">
@@ -105,11 +105,11 @@
                 <div class="row">
                     <div class="col-6 col-md-6 pl-0 pr-1">
     				    <label class="required mb-2">NID Front Side</label>
-    				    <input type="file" @if($user->nid_front) data-default-file="{{asset('upload/users/'.$user->nid_front)}}" @else required @endif data-allowed-file-extensions="jpg jpeg png gif" data-max-file-size="5M"  class="dropify" name="nid_front" >
+    				    <input type="file" <?php if($user->nid_front): ?> data-default-file="<?php echo e(asset('upload/users/'.$user->nid_front)); ?>" <?php else: ?> required <?php endif; ?> data-allowed-file-extensions="jpg jpeg png gif" data-max-file-size="5M"  class="dropify" name="nid_front" >
     				</div>
     				<div class="col-6 col-md-6 pr-0 pl-1">
     				    <label class="required mb-2">NID Back Side</label>                         
-    				    <input type="file" @if($user->nid_back) data-default-file="{{asset('upload/users/'.$user->nid_back)}}" @else required @endif data-allowed-file-extensions="jpg jpeg png gif" data-max-file-size="5M"  class="dropify" name="nid_back"  >
+    				    <input type="file" <?php if($user->nid_back): ?> data-default-file="<?php echo e(asset('upload/users/'.$user->nid_back)); ?>" <?php else: ?> required <?php endif; ?> data-allowed-file-extensions="jpg jpeg png gif" data-max-file-size="5M"  class="dropify" name="nid_back"  >
                     </div>
                 </div>
             </div>
@@ -117,9 +117,9 @@
             <div class="col-md-6 col-sm-12 mb-2">
 				<label class="required mb-2">Upload Trade License</label>   
 				<div class="d-flex gap">
-				    <input type="file" @if($user->trade_license) data-default-file="{{asset('upload/users/'.$user->trade_license)}}" @else required @endif data-allowed-file-extensions="jpg jpeg png gif" data-max-file-size="5M" class="dropify mr-1" name="trade_license" >
-				    <input type="file" @if($user->trade_license2) data-default-file="{{asset('upload/users/'.$user->trade_license2)}}" @endif data-allowed-file-extensions="jpg jpeg png gif" data-max-file-size="5M" class="dropify" name="trade_license2">
-				    <input type="file" @if($user->trade_license3) data-default-file="{{asset('upload/users/'.$user->trade_license3)}}" @endif data-allowed-file-extensions="jpg jpeg png gif" data-max-file-size="5M" class="dropify ml-1" name="trade_license3">
+				    <input type="file" <?php if($user->trade_license): ?> data-default-file="<?php echo e(asset('upload/users/'.$user->trade_license)); ?>" <?php else: ?> required <?php endif; ?> data-allowed-file-extensions="jpg jpeg png gif" data-max-file-size="5M" class="dropify mr-1" name="trade_license" >
+				    <input type="file" <?php if($user->trade_license2): ?> data-default-file="<?php echo e(asset('upload/users/'.$user->trade_license2)); ?>" <?php endif; ?> data-allowed-file-extensions="jpg jpeg png gif" data-max-file-size="5M" class="dropify" name="trade_license2">
+				    <input type="file" <?php if($user->trade_license3): ?> data-default-file="<?php echo e(asset('upload/users/'.$user->trade_license3)); ?>" <?php endif; ?> data-allowed-file-extensions="jpg jpeg png gif" data-max-file-size="5M" class="dropify ml-1" name="trade_license3">
 				</div>
             </div>
             
@@ -131,7 +131,7 @@
     					<option> Agent Bonik </option>
                         <option> Authentic Bonik </option>
                         <option> Authentic Bonik </option>
-                        <option> Wholsseller Bonik </option>
+                        <option> Wholseller Bonik </option>
     				</select>
     			</div>
 			</div>
@@ -140,9 +140,9 @@
     				<span class="required">Select Your Region</span>
     				<select name="region" onchange="get_city(this.value)" required id="input-payment-country" class="form-control">
     					<option value=""> Please Select  </option>
-    					@foreach($states as $state)
-    					<option @if($user->region == $state->id) selected @endif value="{{$state->id}}"> {{$state->name}} </option>
-    					@endforeach
+    					<?php $__currentLoopData = $states; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $state): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+    					<option <?php if($user->region == $state->id): ?> selected <?php endif; ?> value="<?php echo e($state->id); ?>"> <?php echo e($state->name); ?> </option>
+    					<?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
     				</select>
     			</div>
 			</div>
@@ -152,31 +152,31 @@
 					<select name="city" onchange="get_area(this.value)"  required id="show_city" class="form-control">
 						
 						<option value="">Please Select</option>
-						@foreach($cities as $city)
-						<option @if($user->city == $city->id) selected @endif value="{{$city->id}}"> {{$city->name}} </option>
-						@endforeach
+						<?php $__currentLoopData = $cities; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $city): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+						<option <?php if($user->city == $city->id): ?> selected <?php endif; ?> value="<?php echo e($city->id); ?>"> <?php echo e($city->name); ?> </option>
+						<?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
 					</select>
 				</div>
 			</div>
 		</div>
-		@if($user->verify)
+		<?php if($user->verify): ?>
         <h3 class="text-center py-3 mb-4">Your account already verified.</h3>
-        @else
+        <?php else: ?>
         <div class="buttons clearfix">
             <div class="pull-right">
                 <input type="submit" class="btn btn-md btn-primary" value="Verify Account">
             </div>
             
         </div>
-        @endif
+        <?php endif; ?>
 	</form>
 
 </div>
-@endsection
+<?php $__env->stopSection(); ?>
 
-@section('js')
-<script src="{{ asset('js/parsley.min.js') }}"></script>
-    <script src="{{asset('assets')}}/node_modules/dropify/dist/js/dropify.min.js"></script>
+<?php $__env->startSection('js'); ?>
+<script src="<?php echo e(asset('js/parsley.min.js')); ?>"></script>
+    <script src="<?php echo e(asset('assets')); ?>/node_modules/dropify/dist/js/dropify.min.js"></script>
     <script>
     $(document).ready(function() {
         // Basic
@@ -203,7 +203,7 @@
        var number = $('#number').val();
         if(number){
         $.ajax({
-            url:"{{route('addNumber')}}",
+            url:"<?php echo e(route('addNumber')); ?>",
             method:'get',
             data:{number:number},
             success:function(data){
@@ -218,7 +218,7 @@
        var otp = $('#otp').val();
         if(otp){
         $.ajax({
-            url:"{{route('verifyNumber')}}",
+            url:"<?php echo e(route('verifyNumber')); ?>",
             method:'get',
             data:{otp:otp,number:number},
             success:function(data){
@@ -260,7 +260,7 @@
        var email = $('#email').val();
         if(email){
         $.ajax({
-            url:"{{route('addEmail')}}",
+            url:"<?php echo e(route('addEmail')); ?>",
             method:'get',
             data:{email:email},
             success:function(data){
@@ -275,7 +275,7 @@
        var code = $('#code').val();
         if(code){
         $.ajax({
-            url:"{{route('verifyEmail')}}",
+            url:"<?php echo e(route('verifyEmail')); ?>",
             method:'get',
             data:{code:code,email:email},
             success:function(data){
@@ -301,7 +301,7 @@
 
 	 function get_city(id, type=''){
        
-        var  url = '{{route("get_city", ":id")}}';
+        var  url = '<?php echo e(route("get_city", ":id")); ?>';
         url = url.replace(':id',id);
         $.ajax({
             url:url,
@@ -319,7 +319,7 @@
 
     function get_area(id, type=''){
            
-        var  url = '{{route("get_area", ":id")}}';
+        var  url = '<?php echo e(route("get_area", ":id")); ?>';
         url = url.replace(':id',id);
         $.ajax({
             url:url,
@@ -335,4 +335,5 @@
         });
     }  
 </script>
-@endsection
+<?php $__env->stopSection(); ?>
+<?php echo $__env->make('layouts.frontend', \Illuminate\Support\Arr::except(get_defined_vars(), ['__data', '__path']))->render(); ?><?php /**PATH C:\xampp\htdocs\bonik\resources\views/users/seller-verify.blade.php ENDPATH**/ ?>

@@ -211,22 +211,25 @@
                                             <div class="form-group"><label for="adsType required">Select Advertisement Type</label><select name="adsType" onchange="adsTypes(this.value)" required="required" id="adsType" class="form-control custom-select"><option value="">Select Type</option><option value="google" > Google Adsense</option><option value="image" >Image Ads</option><option value="others">Others Ads</option></select></div>
                                         </div>
                                         <div class="col-md-12" id="showAdsType"></div>
-                                        <div class="col-md-12">
+                                        <div class="col-md-6">
                                             <div class="form-group">
-                                                <label for="page">Select Page</label>
-                                                <select name="page"  required="required" id="page" class="form-control custom-select">
-                                                    <option value="all">All page</option>
-                                                    <?php $__currentLoopData = $pages; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $page): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
-                                                    <option value="<?php echo e($page->slug); ?>"><?php echo e($page->title); ?></option>
-                                                   <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
-                                                
+                                                <label for="position">Desktop Position</label>
+                                                <select name="position" required="required" id="position" class="form-control custom-select">
+                                                    <option value="top-content" <?php echo e((old('position') == 'top-content') ? 'selected' : ''); ?>>Top Of the Content</option>
+                                                    <option value="middle-content" <?php echo e((old('position') =='middle-content') ? 'selected' : ''); ?>>Middle Of the Content</option>
+                                                    <option value="bottom-content" <?php echo e((old('position') =='bottom-content') ? 'selected' : ''); ?>>Bottom Of the Content</option>
+                                                    <option value="sidebar-top" <?php echo e((old('position') =='sidebar-top') ? 'selected' : ''); ?>>Sidebar Top </option>
+                                                   <option value="sidebar-middle" <?php echo e((old('position') =='sidebar-middle') ? 'selected' : ''); ?>>Sidebar Middle </option>
+
+                                                   <option value="sidebar-bottom" <?php echo e((old('position') =='sidebar-middle') ? 'selected' : ''); ?>>Sidebar Bottom </option>
+                                                  
                                                 </select>
                                             </div>
                                         </div>
-                                        <div class="col-md-12">
+                                        <div class="col-md-6">
                                             <div class="form-group">
-                                                <label for="position">Select Position</label>
-                                                <select name="position"  required="required" id="position" class="form-control custom-select">
+                                                <label for="position">Mobile Position</label>
+                                                <select name="mobile_position"  required="required" id="position" class="form-control custom-select">
                                                    
                                                     <option value="top-content" <?php echo e((old('position') == 'top-content') ? 'selected' : ''); ?>>Top Of the Content</option>
                                                     <option value="middle-content" <?php echo e((old('position') =='middle-content') ? 'selected' : ''); ?>>Middle Of the Content</option>
@@ -239,6 +242,19 @@
                                                 </select>
                                             </div>
                                         </div>
+                                        <div class="col-md-12">
+                                            <div class="form-group">
+                                                <label for="page">Select Page</label>
+                                                <select name="page"  required="required" id="page" class="form-control custom-select">
+                                                    <option value="all">All page</option>
+                                                    <?php $__currentLoopData = $pages; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $page): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                                                    <option value="<?php echo e($page->slug); ?>"><?php echo e($page->title); ?></option>
+                                                   <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
+                                                
+                                                </select>
+                                            </div>
+                                        </div>
+                                        
                                         <div class="col-md-6">
                                             <div class="head-label">
                                                 <label class="switch-box">Status</label>
@@ -325,7 +341,7 @@
 
             var output = '';
             if(type == 'image'){
-                output = '<div class="form-group"><label class="dropify_image_area required">Add Images</label> <div class="form-group"> <input required type="file" name="image" id="input-file-now" class="dropify" /> </div> </div><div class="form-group"> <label for="redirect_url">Redirect URL</label>  <input type="text" name="redirect_url"  id="redirect_url" class="form-control" > </div>';
+                output = '<div style="display:flex;"><div style="width:49%;margin:5px" class="form-group"><label class="dropify_image_area required">Desktop Banner</label> <div class="form-group"> <input required type="file" name="image" id="input-file-now" class="dropify" /> </div> </div><div  style="width:49%;margin:5px" class="form-group"><label class="dropify_image_area required">Mobile Banner</label> <div class="form-group"> <input required type="file" name="mobile_image" id="input-file-now" class="dropify" /> </div> </div></div><div class="form-group"> <label for="redirect_url">Redirect URL</label>  <input type="text" name="redirect_url"  id="redirect_url" class="form-control" > </div>';
             }else if(type == 'google'){
                 output = '<div class="form-group"> <label class="required" for="add_code">Add code</label> <textarea name="add_code" class=" form-control" rows="5" id="add_code" placeholder="Enter ads code ..."></textarea> </div> ';
             }else if(type == 'others'){
