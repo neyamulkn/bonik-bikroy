@@ -69,6 +69,10 @@ route::group(['middleware' => ['auth']], function(){
 	Route::get('ads/promote/payment/{adsSlug}/{order_id}', 'PromoteAdsController@adsPromotePayment')->name('ads.promotePayment');
 
 	Route::get('promote/ads/history/{package_slug?}', 'PromoteAdsController@adsPromoteHistory')->name('ads.promoteHistory');
+
+	Route::get('seller/verification', 'SellerVerificationController@verifyAccount')->name('verifyAccount');
+	Route::post('seller/verification', 'SellerVerificationController@verifyAccountRequest')->name('verifyAccount');
+ 		
 	
 	route::group(['namespace' => 'User'], function(){
 		//user account
@@ -81,17 +85,18 @@ route::group(['middleware' => ['auth']], function(){
 		//profile image change for all user
 		Route::post('change/profile/image', 'UserController@changeProfileImage')->name('changeProfileImage');
 
-		Route::get('seller/verification', 'UserController@verifyAccount')->name('verifyAccount');
-		Route::post('seller/verification', 'UserController@verifyAccountRequest')->name('verifyAccount');
- 		
+		
  		Route::get('my/ads/{status?}', 'PostController@index')->name('post.list');
  		Route::match(["get", "post"], 'ads-post/{category?}/{subcategory?}', 'PostController@create')->name('post.create');
  		Route::post('post/store', 'PostController@store')->name('post.store');
  		Route::post('wanted/post/store', 'PostController@storeWantedPost')->name('storeWantedPost');
- 		Route::post('link/post/store', 'PostController@storeLinkPost')->name('storeLinkPost');
+ 		
  		Route::get('post/edit/{slug}', 'PostController@edit')->name('post.edit');
  		Route::post('post/update/{id}', 'PostController@update')->name('post.update');
  		Route::post('post/delete', 'PostController@delete')->name('post.delete');
+
+
+ 		Route::post('link/add', 'LinkAdController@store')->name('storeLinkAd');
 
  		Route::get('add/number', 'UserController@addNumber')->name('addNumber');
  		Route::get('verify/number', 'UserController@verifyNumber')->name('verifyNumber');

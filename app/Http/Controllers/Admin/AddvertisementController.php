@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\Addvertisement;
 use App\Models\Page;
+use App\Models\Notification;
 use Brian2694\Toastr\Facades\Toastr;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -33,13 +34,10 @@ class AddvertisementController extends Controller
         return view('admin.addvertisement.addvertisement-list')->with(compact('advertisements', 'pages'));
     }
  
-
     public function store(Request $request)
     {
 
         $request->validate([
-            'adsType' => 'required',
-            'page' => 'required',
             'position' => 'required'
         ]);
 
@@ -99,6 +97,7 @@ class AddvertisementController extends Controller
         $data->adsType = $request->adsType;
         $data->page = $request->page;
         $data->position = $request->position;
+        $data->mobile_position = $request->mobile_position;
         $data->redirect_url = $request->redirect_url;
         $data->clickBtn = $request->clickBtn;
         $data->add_code =  $request->add_code;
@@ -122,13 +121,29 @@ class AddvertisementController extends Controller
             $data->image = $image_name;
         }
 
+        if($request->hasFile('mobile_image')) {
+            
+            //delete from store folder
+            if ($data->mobile_image){
+                $image_path = public_path('upload/marketing/' . $data->mobile_image);
+                if (file_exists($image_path)) {
+                    unlink($image_path);
+                } 
+            }
+           
+            $image = $request->file('image');
+            $image_name = time().$image->getClientOriginalName();
+            $image->move(public_path('upload/marketing'), $image_name);
+
+            $data->mobile_image = $image_name;
+        }
+
+
         $data->save();
 
         Toastr::success('Addvertisement updated Successful.');
         return back();
     }
-
-
 
     public function delete($id)
     {
@@ -168,5 +183,41 @@ class AddvertisementController extends Controller
         }
 
         return response()->json($output);
+    }
+
+
+    public function adPaymentDetails($id){
+
+        $addvertisement = Addvertisement::where('id', $id)->first();
+        if($addvertisement){
+            return view('admin.addvertisement.paymentCheckModal')->with(compact('addvertisement'));
+        }
+    }
+
+     // change payment Status function
+    public function changePaymentStatus(Request $request){
+
+        $user_id = Auth::guard('admin')->id();
+        $addvertisement = Addvertisement::where('id', $request->id)->first();
+        if($addvertisement){
+
+            $addvertisement->status = ($request->payment_status == 'paid') ? 1 : 'pending';
+            $addvertisement->payment_status = $request->payment_status;
+            $addvertisement->save();
+
+            Toastr::success('Payment status ' . str_replace('-', ' ', $request->payment_status) . ' successful.');
+
+            //insert notification in database
+            Notification::create([
+                'type' => 'adPayment',
+                'fromUser' => null,
+                'toUser' => $addvertisement->user_id,
+                'item_id' => $addvertisement->id,
+                'notify' => 'Your ad payment '. $request->payment_status . 'successful.'
+            ]);
+        }else{
+            Toastr::error('Payment status update failed.!');
+        }
+        return back();
     }
 }

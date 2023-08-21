@@ -3,20 +3,38 @@
 
 <?php $__env->startSection('css'); ?>
 <link href="<?php echo e(asset('assets')); ?>/node_modules/dropify/dist/css/dropify.min.css" rel="stylesheet" type="text/css" />
-<style>.h-300 .dropify-wrapper {height: 300px !important;}.dropify-wrapper {height: 140px !important;}</style>
+<style>.h-300 .dropify-wrapper {height: 300px !important;}.dropify-wrapper {height: 140px !important;}
+
+.payment-option ul li .checked {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 30px;
+  height: 30px;
+  background: #6c2eb9;
+  -webkit-clip-path: polygon(0 0, 0% 100%, 100% 0);
+          clip-path: polygon(0 0, 0% 100%, 100% 0);
+  opacity: 0;
+}
+.payment-option ul li .active .checked {
+  opacity: 1;
+}
+.payment-option ul li .checked i{ font-size: 12px; color: white;
+  margin-left: -10px;margin-top: -5px}
+</style>
 
 <?php $__env->stopSection(); ?>
 
 <?php $__env->startSection('content'); ?>
 <div class="container bg-white mb-2 p-3">
     <h3 class="border-bottom text-center pb-2 mb-3">Choose Your Ad Type</h3>
-    <div class="d-flex justify-content-center align-items-center mb-3">
+    <div class="d-flex justify-content-center align-items-center mb-3 post_type">
         <div class="form-check">
             <input class="form-check-input" type="radio" name="post_type" value="sell" id="radioBox1" data-box="#box1" checked>
             <label class="form-check-label" for="radioBox1">Sell</label>
         </div>
         <div class="form-check">
-            <input class="form-check-input" type="radio" name="post_type" value="link_ads" id="radioBox2" data-box="#box2">
+            <input class="form-check-input" type="radio" name="post_type" value="link_ad" id="radioBox2" data-box="#box2">
             <label class="form-check-label" for="radioBox2">Link Ads</label>
         </div>
         <div class="form-check">
@@ -28,7 +46,7 @@
 <div class="container bg-white mb-5 px-0">
     <div id="box1" class="box py-3" style="display: block;">
         <h3 class="border-bottom text-center pb-2 mb-3">Choose Your Post</h3>
-        <form action="<?php echo e(route('post.create')); ?>" method="post" enctype="multipart/form-data">
+        <form action="<?php echo e(route('post.create')); ?>" data-parsley-validate method="post" enctype="multipart/form-data">
         <?php echo csrf_field(); ?>
         <input type="hidden" name="post_type" value="sell">
         <div class="row">
@@ -92,24 +110,28 @@
 
     <div id="box2" class="box w-100 py-3" style="display: none;">
         <h3 class="border-bottom text-center pb-2 mb-3">Choose Your Banner</h3>
-        <form action="<?php echo e(route('storeLinkPost')); ?>" method="post" enctype="multipart/form-data">
+        <form action="<?php echo e(route('storeLinkAd')); ?>" data-parsley-validate method="post" enctype="multipart/form-data">
         <?php echo csrf_field(); ?>
-        <input type="hidden" name="post_type" value="wanted">
+        <input type="hidden" name="post_type" value="link_ad">
         <div class="row">
             <div class="col-12 col-md-12">
                 <div class="row">
                     <div class="col-12 col-md-6 pl-md-0">
                         <label class="mb-2" for="">Type your banner link</label>
-                        <input type="text" name="redirect_url" placeholder="link" class="mb-2 w-100 borders p-2 gb shadow-b rounded-3">
+                        <input type="text" required name="redirect_url" placeholder="link" class="mb-2 w-100 borders p-2 gb shadow-b rounded-3">
                     </div>
                     <div class="col-12 col-md-6 pr-md-0">
                         <label class="mb-2 w-60" for="">Select your banner Desktop</label>
-                        <select name="position" class="form-control mb-2 gb shadow-b borders" id="">
-                            <option value="" selected disabled>Select an option</option>
-                            <option value="">Bannder 728x90</option>
-                            <option value="">Bannder 160x600</option>
-                            <option value="">Bannder 300x600</option>
-                            <option value="">Bannder 300x300</option>
+                       <select name="position" required="required" id="position" class="form-control custom-select">
+                        <option value="" selected disabled>Select an option</option>
+                            <option value="top-content" <?php echo e((old('position') == 'top-content') ? 'selected' : ''); ?>>Top Of the Content</option>
+                            <option value="middle-content" <?php echo e((old('position') =='middle-content') ? 'selected' : ''); ?>>Middle Of the Content</option>
+                            <option value="bottom-content" <?php echo e((old('position') =='bottom-content') ? 'selected' : ''); ?>>Bottom Of the Content</option>
+                            <option value="sidebar-top" <?php echo e((old('position') =='sidebar-top') ? 'selected' : ''); ?>>Sidebar Top </option>
+                           <option value="sidebar-middle" <?php echo e((old('position') =='sidebar-middle') ? 'selected' : ''); ?>>Sidebar Middle </option>
+
+                           <option value="sidebar-bottom" <?php echo e((old('position') =='sidebar-middle') ? 'selected' : ''); ?>>Sidebar Bottom </option>
+                          
                         </select>
                     </div>
                 </div>
@@ -121,23 +143,26 @@
             </div>
             <div class="col-12 col-md-6">
                 <label class="my-2 w-100" for="">Select your banner mobile</label>
-                <select class="form-control mb-2 gb shadow-b borders" id="">
+                <select name="mobile_position" class="form-control mb-2 gb shadow-b borders" id="">
                     <option value="" selected disabled>Select an option</option>
-                    <option value="">Bannder 728x90</option>
-                    <option value="">Bannder 160x600</option>
-                    <option value="">Bannder 300x600</option>
-                    <option value="">Bannder 300x300</option>
+                   <option value="top-content" <?php echo e((old('position') == 'top-content') ? 'selected' : ''); ?>>Top Of the Content</option>
+                    <option value="middle-content" <?php echo e((old('position') =='middle-content') ? 'selected' : ''); ?>>Middle Of the Content</option>
+                    <option value="bottom-content" <?php echo e((old('position') =='bottom-content') ? 'selected' : ''); ?>>Bottom Of the Content</option>
+                    <option value="sidebar-top" <?php echo e((old('position') =='sidebar-top') ? 'selected' : ''); ?>>Sidebar Top </option>
+                   <option value="sidebar-middle" <?php echo e((old('position') =='sidebar-middle') ? 'selected' : ''); ?>>Sidebar Middle </option>
+
+                   <option value="sidebar-bottom" <?php echo e((old('position') =='sidebar-middle') ? 'selected' : ''); ?>>Sidebar Bottom </option>
                 </select>
                 <label class="mb-2 w-100" for="">Upload your banner</label>
                 <div class="h-300">
-                    <input type="file" data-allowed-file-extensions="jpg jpeg png gif" data-max-file-size="5M"  class=" dropify mt-2 shadow-b" name="photo">
+                    <input type="file" data-allowed-file-extensions="jpg jpeg png gif" data-max-file-size="5M"  class=" dropify mt-2 shadow-b" name="mobile_image">
                 </div>
             </div>
             <div class="col-12 col-md-6">
                 <label class="mt-2" for="">Start date</label>
-                <input type="date" placeholder="link" class="mt-2 w-100 borders p-2 gb shadow-b rounded-3">
+                <input type="date" required min="<?php echo e(date('Y-m-d')); ?>" name="start_date" id="start_date" placeholder="link" class="mt-2 w-100 borders p-2 gb shadow-b rounded-3">
                 <label class="my-2" for="">End date</label>
-                <input type="date" placeholder="link" class="mt-2 w-100 borders p-2 gb shadow-b rounded-3">
+                <input type="date" required min="<?php echo e(Carbon\Carbon::parse(now())->addDay()->format('Y-m-d')); ?>" name="end_date" id="end_date" placeholder="link" class="mt-2 w-100 borders p-2 gb shadow-b rounded-3">
                 
                 <div class="w-100 ab px-2 py-3 borders my-3">
                     <div class="d-flex align-items-center justify-content-between border-bottom border-dark pb-1 mb-1">
@@ -145,25 +170,62 @@
                         <p>(Per Day TK. 100)</p>
                     </div>
                     <div class="d-flex align-items-center justify-content-between">
-                        <p>Urgent Ad</p>
-                        <p>3 Days</p>
+                        <p>Link Ad</p>
+                        <p><span id="days"> 0 </span> Days</p>
                         <p>TK 100</p>
                     </div>
                     <div class="d-flex align-items-center justify-content-between border-top border-dark pt-1 mt-1">
                         <p>Total</p>
-                        <b>TK. 1200</b>
+                        <b>TK.<span id="total"> 0</span></b>
                     </div>
                 </div>
-                <div>
-                    <button class="yb py-2 text-center bt bb2 rounded font-weight-bold mt-2 float-right px-5">Post Ad</button>
+                <div class="payment-option"> 
+                  <ul class="nav nav-tabs">
+                      <?php $__currentLoopData = $paymentgateways; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $index => $method): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                         <li>
+                            <input required type="radio" <?php if($index == 0): ?> checked <?php endif; ?> name="payment_method" id="payment_method<?php echo e($method->id); ?>" value="<?php echo e($method->method_slug); ?>"> 
+                            <a onclick="paymentMethod(<?php echo e($method->id); ?>)" <?php if($index == 0): ?> class="active" <?php endif; ?> style="border: 1px solid #6c2eb9;border-radius: 5px; display:block;padding:5px;margin-bottom: 8px;position: relative; margin-right: 15px;text-align: center;" data-toggle="tab" href="#paymentgateway<?php echo e($method->id); ?>"><div class="checked"><i class="fa fa-check"></i></div> <img  width="50"  src="<?php echo e(asset('upload/images/payment/'.$method->method_logo)); ?>"></a></li>
+                    
+                      <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
+                  </ul>
+                  <div class="tab-content">
+                    <?php $__currentLoopData = $paymentgateways; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $index => $method): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+
+                      <?php if($method->is_default == 1): ?>
+                      <div id="paymentgateway<?php echo e($method->id); ?>" class="tab-pane fade <?php if($index == 0): ?> active show <?php endif; ?>">
+                        
+                              <?php echo $method->method_info; ?>
+
+                              
+                             
+                      </div>
+                      <?php else: ?>
+                      <div id="paymentgateway<?php echo e($method->id); ?>" class="tab-pane fade <?php if($index == 0): ?> active show <?php endif; ?>">
+                        
+                        <?php echo $method->method_info; ?>
+
+                          <strong style="color: green;">Pay with <?php echo e($method->method_name); ?>.</strong><br/>
+                          <?php if($method->method_slug != 'cash'): ?>
+                          <strong>Payment Transaction Id</strong>
+                          <p><input type="text" required data-parsley-required-message = "Transaction Id is required" placeholder="Enter Transaction Id" value="<?php echo e(old('trnx_id')); ?>" class="form-control" name="trnx_id"></p>
+                          <?php endif; ?>
+                          <strong>Write Your <?php echo e($method->method_name); ?> Payment Information below.</strong>
+                          <textarea required data-parsley-required-message = "Payment Information is required" name="payment_info" style="margin: 0;" rows="2" placeholder="Write Payment Information" class="form-control"><?php echo e(old('payment_info')); ?></textarea>
+                        
+                      </div>
+                      <?php endif; ?>
+                    <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
+                     
+                  </div>
                 </div>
+                <div id="linkAdBtn"> </div>
             </div>
         </div>
         </form>
     </div>
 
     <div id="box3" class="box w-100 py-3" style="display: none;">
-        <form action="<?php echo e(route('storeWantedPost')); ?>" method="post" enctype="multipart/form-data">
+        <form action="<?php echo e(route('storeWantedPost')); ?>" data-parsley-validate method="post" enctype="multipart/form-data">
         <?php echo csrf_field(); ?>
         <input type="hidden" name="post_type" value="wanted">
         <h3 class="border-bottom text-center pb-2 mb-3">Choose Your post request</h3>
@@ -274,6 +336,7 @@
 <?php $__env->stopSection(); ?>
 
 <?php $__env->startSection('js'); ?>
+
 <script src="<?php echo e(asset('assets')); ?>/node_modules/dropify/dist/js/dropify.min.js"></script>
 <script>
     $(document).ready(function() {
@@ -282,10 +345,16 @@
 
     });
 </script>
+<script src="<?php echo e(asset('js/parsley.min.js')); ?>"></script>
 <script>
+
+    function paymentMethod(id){
+        $("#payment_method"+id).click();
+        
+    }
   $(document).ready(function() {
     // Handle radio button change event
-    $('input[type="radio"]').change(function() {
+    $('.post_type input[type="radio"]').change(function() {
       var selectedBox = $(this).data('box');
       $(".box").hide(); // Hide all boxes
       $(selectedBox).show(); // Show the selected box
@@ -350,6 +419,35 @@
             moreMobile();
        }
     }
+</script>
+
+<script type="text/javascript">
+    $(document).on("change", "#start_date, #end_date", function(){
+
+        $("#start_date").val()
+        var date1 = new Date($("#start_date").val());
+        var date2 = new Date($("#end_date").val());
+
+        var difference = date2.getTime() - date1.getTime();
+        var days = Math.ceil(difference / (1000 * 3600 * 24));
+        if(days < 0 || !parseInt(days)){
+            days = 0;
+            total = 0;
+        } else if(days == 0){
+            days = 1;
+        }else{
+            
+        }
+        var total = (days * 100);
+
+        $("#days").html(days);
+        $("#total").html(total);
+        if(days > 0){
+            $("#linkAdBtn").html(`<button class="yb py-2 text-center bt bb2 rounded font-weight-bold mt-2 float-right px-5">Post Ad</button>`)
+        }else{
+            $("#linkAdBtn").html(``);
+        }
+    });
 </script>
 <?php $__env->stopSection(); ?>
 <?php echo $__env->make('layouts.frontend', \Illuminate\Support\Arr::except(get_defined_vars(), ['__data', '__path']))->render(); ?><?php /**PATH C:\xampp\htdocs\bonik\resources\views/users/post/ads-category.blade.php ENDPATH**/ ?>

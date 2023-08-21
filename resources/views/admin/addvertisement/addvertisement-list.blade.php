@@ -128,6 +128,7 @@
                                                 <th>Type</th>
                                                 <th>Page</th>
                                                 <th>Position</th>
+                                                <th>Payment</th>
                                                 <th>Status</th>
                                                 <th>Action</th>
                                             </tr>
@@ -142,12 +143,22 @@
                                                 <td>
                                                     {{str_replace('-', ' ', $data->position)}}
                                                 </td>
-                                            
                                                 <td>
+                                                    <a href="javascript:void(0)" class="label btn-xs @if($data->payment_status == 'paid')  label-success @elseif($data->payment_status == 'received') label-info @else label-danger @endif">
+                                                
+                                                    <div  @if($data->payment_status != 'paid') onclick="adPaymentPopup('{{ route("addvertisement.paymentDetails", $data->id)}}')"  @endif class="text-inverse p-r-10" >{{$data->payment_status}} </div>
+                                                    
+                                                    </a>
+                                                </td>
+                                                <td>
+                                                    @if($data->status != 'pending')
                                                     <div class="custom-control custom-switch" style="padding-left: 3.25rem;">
                                                       <input name="status" onclick="satusActiveDeactive('addvertisements', {{$data->id}})"   type="checkbox" {{($data->status == 1) ? 'checked' : ''}} class="custom-control-input" id="status{{$data->id}}">
                                                       <label class="custom-control-label" for="status{{$data->id}}"></label>
                                                     </div>
+                                                    @else
+                                                    <span class="label label-danger">Pending</span>
+                                                    @endif
                                                 </td>
                                                 <td>
                                                      <button type="button" onclick="edit('{{$data->id}}')"  data-toggle="modal" data-target="#edit" class="btn btn-info btn-sm"><i class="ti-pencil" aria-hidden="true"></i> Edit</button>
@@ -304,7 +315,24 @@
         </div>
         <!-- delete Modal -->
         @include('admin.modal.delete-modal')
-       
+           <div class="modal bs-example-modal-lg" id="adPaymentModal" style="display: none;">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h4 class="modal-title" id="myLargeModalLabel">Update payment info.</h4>
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+                </div>
+                @if(Session::has('error'))
+                    <div class="alert alert-danger">
+                      {{Session::get('error')}}
+                    </div>
+                @endif
+                <div class="modal-body" id="adPaymentDetails"></div> 
+            </div>
+            <!-- /.modal-content -->
+        </div>
+        <!-- /.modal-dialog -->
+    </div>
 @endsection
 @section('js')
     <!-- This is data table -->
@@ -332,8 +360,8 @@
                 // $ID Error display id name
                 @include('common.ajaxError', ['ID' => 'edit_form'])
             });
-
         }
+
         function adsTypes(type, edit=''){
 
             var output = '';
@@ -356,6 +384,18 @@
             }
 
             $('.dropify').dropify();
+        }
+
+        function adPaymentPopup(link){
+            $('#adPaymentModal').modal('show');
+            $('#adPaymentDetails').html('<div class="loadingData"></div>');
+            $.ajax({
+                url:link,
+                method:"get",
+                success:function(data){
+                    $('#adPaymentDetails').html(data);
+                }
+            });
         }
     </script>
 

@@ -15,7 +15,7 @@
         	<div class="col-md-2"></div>
 
         	<div class="col-md-8 col-xs-12" style="background: #fff;border-radius: 5px;padding-top: 15px;">
-        		<h5>@if($package->package_id == 'post_fee')  Ad post fee  @else @if($package->get_boostAd) Promote Ad ({{$package->get_package->name}}) @else Package Details  @endif   @endif </h5>
+        		<h5> Package Details </h5>
 	            <div style="background: #f1f2f4;" class="box-inner">
 	                <div class="table-responsive checkout-product">
 	                  <table  id="order_summary" class="table table-bordered table-hover">

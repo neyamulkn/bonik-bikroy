@@ -127,6 +127,7 @@
                                                 <th>Type</th>
                                                 <th>Page</th>
                                                 <th>Position</th>
+                                                <th>Payment</th>
                                                 <th>Status</th>
                                                 <th>Action</th>
                                             </tr>
@@ -142,12 +143,22 @@
                                                     <?php echo e(str_replace('-', ' ', $data->position)); ?>
 
                                                 </td>
-                                            
                                                 <td>
+                                                    <a href="javascript:void(0)" class="label btn-xs <?php if($data->payment_status == 'paid'): ?>  label-success <?php elseif($data->payment_status == 'received'): ?> label-info <?php else: ?> label-danger <?php endif; ?>">
+                                                
+                                                    <div  <?php if($data->payment_status != 'paid'): ?> onclick="adPaymentPopup('<?php echo e(route("addvertisement.paymentDetails", $data->id)); ?>')"  <?php endif; ?> class="text-inverse p-r-10" ><?php echo e($data->payment_status); ?> </div>
+                                                    
+                                                    </a>
+                                                </td>
+                                                <td>
+                                                    <?php if($data->status != 'pending'): ?>
                                                     <div class="custom-control custom-switch" style="padding-left: 3.25rem;">
                                                       <input name="status" onclick="satusActiveDeactive('addvertisements', <?php echo e($data->id); ?>)"   type="checkbox" <?php echo e(($data->status == 1) ? 'checked' : ''); ?> class="custom-control-input" id="status<?php echo e($data->id); ?>">
                                                       <label class="custom-control-label" for="status<?php echo e($data->id); ?>"></label>
                                                     </div>
+                                                    <?php else: ?>
+                                                    <span class="label label-danger">Pending</span>
+                                                    <?php endif; ?>
                                                 </td>
                                                 <td>
                                                      <button type="button" onclick="edit('<?php echo e($data->id); ?>')"  data-toggle="modal" data-target="#edit" class="btn btn-info btn-sm"><i class="ti-pencil" aria-hidden="true"></i> Edit</button>
@@ -307,7 +318,25 @@
         </div>
         <!-- delete Modal -->
         <?php echo $__env->make('admin.modal.delete-modal', \Illuminate\Support\Arr::except(get_defined_vars(), ['__data', '__path']))->render(); ?>
-       
+           <div class="modal bs-example-modal-lg" id="adPaymentModal" style="display: none;">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h4 class="modal-title" id="myLargeModalLabel">Update payment info.</h4>
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+                </div>
+                <?php if(Session::has('error')): ?>
+                    <div class="alert alert-danger">
+                      <?php echo e(Session::get('error')); ?>
+
+                    </div>
+                <?php endif; ?>
+                <div class="modal-body" id="adPaymentDetails"></div> 
+            </div>
+            <!-- /.modal-content -->
+        </div>
+        <!-- /.modal-dialog -->
+    </div>
 <?php $__env->stopSection(); ?>
 <?php $__env->startSection('js'); ?>
     <!-- This is data table -->
@@ -335,8 +364,8 @@
                 // $ID Error display id name
                 <?php echo $__env->make('common.ajaxError', ['ID' => 'edit_form'], \Illuminate\Support\Arr::except(get_defined_vars(), ['__data', '__path']))->render(); ?>
             });
-
         }
+
         function adsTypes(type, edit=''){
 
             var output = '';
@@ -359,6 +388,18 @@
             }
 
             $('.dropify').dropify();
+        }
+
+        function adPaymentPopup(link){
+            $('#adPaymentModal').modal('show');
+            $('#adPaymentDetails').html('<div class="loadingData"></div>');
+            $.ajax({
+                url:link,
+                method:"get",
+                success:function(data){
+                    $('#adPaymentDetails').html(data);
+                }
+            });
         }
     </script>
 

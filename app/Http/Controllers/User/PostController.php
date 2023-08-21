@@ -24,6 +24,7 @@ use App\Models\PackageValue;
 use App\Models\PackagePurchase;
 use App\Models\PromoteAds;
 use App\Models\PredefinedFeature;
+use App\Models\PaymentGateway;
 use App\Models\SiteSetting;
 use App\Traits\CreateSlug;
 use Carbon\Carbon;
@@ -56,9 +57,9 @@ class PostController extends Controller
 
     public function create(Request $request, string $category=null, string $subcategory=null){
         $user_id = Auth::id();
-        $post_id = $this->generatePostId();
+        $product_id = $this->generatePostId();
 
-        $post = Product::with("get_galleryImages")->where("post_id", $post_id)->where("user_id", $user_id)->first();
+        $post = Product::with("get_galleryImages")->where("product_id", $product_id)->where("user_id", $user_id)->first();
         //insert first step
         if($request->isMethod('post') && !$category){
             
@@ -68,7 +69,7 @@ class PostController extends Controller
             // Insert or update post
             if(!$post){
                 $post = new Product();
-                $post->post_id = $post_id;
+                $post->product_id = $product_id;
                 $post->user_id = $user_id;
                 $post->post_type = $request->post_type;
                 $post->status = "not posted";
@@ -118,7 +119,7 @@ class PostController extends Controller
             $post->save();
 
             // gallery Image upload
-            ProductImage::where("post_id", $post_id)->delete(); //delete old images
+            ProductImage::where("product_id", $product_id)->delete(); //delete old images
             if ($request->hasFile('gallery_image')) {
                 $gallery_image = $request->file('gallery_image');
                 foreach ($gallery_image as $image) {
@@ -147,7 +148,7 @@ class PostController extends Controller
                     //save image
                     $img->save(public_path('upload/images/product/gallery/' . $new_image_name));
                     ProductImage::create([
-                        'post_id' => $post_id,
+                        'product_id' => $product_id,
                         'image_path' => $new_image_name,
                         'title' => $new_image_name
                     ]);
@@ -182,6 +183,8 @@ class PostController extends Controller
         $data['regions'] = State::with("get_city")->orderBy('position', 'desc')->where('status', 1)->get();
 
         $data['categories'] = Category::with('get_subcategory')->where('parent_id', '=', null)->orderBy('position', 'asc')->where('status', 1)->get();
+
+        $data['paymentgateways'] = PaymentGateway::orderBy('position', 'asc')->where('method_for', '!=', 'payment')->where('status', 1)->get();
         return view('users.post.ads-category')->with($data);
     }
 
@@ -193,8 +196,8 @@ class PostController extends Controller
             'price' => 'required',
         ]);
         $user_id = Auth::id();
-        $post_id = $this->generatePostId();
-        $post = Product::where("post_id", $post_id)->where("user_id", $user_id)->first();
+        $product_id = $this->generatePostId();
+        $post = Product::where("product_id", $product_id)->where("user_id", $user_id)->first();
         $post->title = $request->title;
         $post->slug = $this->createSlug('products', $request->title);
         $post->description = $request->description;
@@ -221,7 +224,7 @@ class PostController extends Controller
                 foreach ($request->attribute as $attribute_id => $attr_value) {
                     //insert product variation
                     $variation = new ProductVariation();
-                    $variation->post_id = $post->id;
+                    $variation->product_id = $post->id;
                     $variation->attribute_id = $attribute_id;
                     $variation->attribute_name = $attr_value;
                     $variation->in_display = 1;
@@ -233,7 +236,7 @@ class PostController extends Controller
                             if (array_key_exists($i, $request->attributeValue[$attribute_id]) && $request->attributeValue[$attribute_id][$i]) {
 
                                 $feature_details = new ProductVariationDetails();
-                                $feature_details->post_id = $post->id;
+                                $feature_details->product_id = $post->id;
                                 $feature_details->attribute_id = $attribute_id;
                                 $feature_details->variation_id = $variation->id;
                                 $feature_details->attributeValue_name = $request->attributeValue[$attribute_id][$i];
@@ -250,7 +253,7 @@ class PostController extends Controller
                     foreach ($request->features as $feature_id => $feature_name) {
                         if ($request->featureValue[$feature_id]) {
                             $extraFeature = new ProductFeature();
-                            $extraFeature->post_id = $post->id;
+                            $extraFeature->product_id = $post->id;
                             $extraFeature->feature_id = $feature_id;
                             $extraFeature->name = $feature_name;
                             $extraFeature->value = $request->featureValue[$feature_id];
@@ -283,10 +286,10 @@ class PostController extends Controller
         $subcategory_id = ($category) ? $request->category : null;
 
         $user_id = Auth::id();
-        $post_id = $this->uniqueOrderId('products', 'post_id');
+        $product_id = $this->uniqueOrderId('products', 'product_id');
         
         $post = new Product();
-        $post->post_id = $post_id;  
+        $post->product_id = $product_id;  
         $post->user_id = $user_id;
         $post->post_type = $request->post_type;
         $post->title = $request->title;
@@ -363,7 +366,7 @@ class PostController extends Controller
     public function edit($slug)
     {
         $data['product'] = Product::with('get_galleryImages')->where('slug', $slug)->where('user_id', Auth::id())->first();
-        $post_id = $data['product']->id;
+        $product_id = $data['product']->id;
 
         if($data['product']){
             $subcategory_id = 0;
@@ -377,10 +380,10 @@ class PostController extends Controller
                 $subcategory_id = $data['product']->subcategory_id;
             }
 
-            $data['attributes'] = ProductAttribute::with(['get_attrValues.get_productVariant' => function($query) use ($post_id){$query->where('post_id', $post_id);}])->whereIn('category_id', ['all',$category_id,$subcategory_id ])->where('status', 1)->get();
+            $data['attributes'] = ProductAttribute::with(['get_attrValues.get_productVariant' => function($query) use ($product_id){$query->where('product_id', $product_id);}])->whereIn('category_id', ['all',$category_id,$subcategory_id ])->where('status', 1)->get();
 
-            $data['features'] = PredefinedFeature::with(['featureValue' => function ($query) use ($post_id) {
-                $query->where('post_id', $post_id);
+            $data['features'] = PredefinedFeature::with(['featureValue' => function ($query) use ($product_id) {
+                $query->where('product_id', $product_id);
             }])->whereIn('category_id', ['all',$category_id, $subcategory_id ])->where('status', 1)->get();
             $data['regions'] = State::orderBy('name', 'asc')->where('status', 1)->get();
             $data['cities'] = City::where('state_id', $data['product']->state_id)->orderBy('name', 'asc')->where('status', 1)->get();
@@ -401,7 +404,7 @@ class PostController extends Controller
     }
 
     //update new post
-    public function update(Request $request, int $post_id)
+    public function update(Request $request, int $product_id)
     {
         $request->validate([
             'title' => 'required',
@@ -412,7 +415,7 @@ class PostController extends Controller
         $product_active = SiteSetting::where('type', 'product_activation')->where('status', 1)->first();
         
         // update post
-        $data = Product::where('id', $post_id)->where('user_id', Auth::id())->first();
+        $data = Product::where('id', $product_id)->where('user_id', Auth::id())->first();
         if($data){
             $data->title = $request->title;
             $data->description = $request->description;
@@ -491,10 +494,10 @@ class PostController extends Controller
                     foreach ($request->attribute as $attribute_id => $attr_value) {
                         //insert product feature name in feature table
 
-                        $variation = ProductVariation::where('attribute_id', $attribute_id)->where('post_id', $post_id)->first();
+                        $variation = ProductVariation::where('attribute_id', $attribute_id)->where('product_id', $product_id)->first();
                         if(!$variation){
                             $variation = new ProductVariation();
-                            $variation->post_id = $data->id;
+                            $variation->product_id = $data->id;
                             $variation->attribute_id = $attribute_id;
                             $variation->attribute_name = $attr_value;
                             $variation->in_display = 1;
@@ -507,16 +510,16 @@ class PostController extends Controller
                                 if (array_key_exists($i, $request->attributeValue[$attribute_id]) && $request->attributeValue[$attribute_id][$i]) {
 
                                     //delete unselected variation
-                                    ProductVariationDetails::where('variation_id', $variation->id)->where('post_id', $post_id)->whereNotIn('attributeValue_name', $request->attributeValue[$attribute_id])->delete();
+                                    ProductVariationDetails::where('variation_id', $variation->id)->where('product_id', $product_id)->whereNotIn('attributeValue_name', $request->attributeValue[$attribute_id])->delete();
 
                                     //insert or update feature attribute details in ProductVariationDetails table
-                                    $feature_details = ProductVariationDetails::where('attributeValue_name', $request->attributeValue[$attribute_id][$i])->where('post_id', $post_id)->first();
+                                    $feature_details = ProductVariationDetails::where('attributeValue_name', $request->attributeValue[$attribute_id][$i])->where('product_id', $product_id)->first();
 
                                     if (!$feature_details) {
                                         $feature_details = new ProductVariationDetails();
                                     }
 
-                                    $feature_details->post_id = $data->id;
+                                    $feature_details->product_id = $data->id;
                                     $feature_details->attribute_id = $attribute_id;
                                     $feature_details->variation_id = $variation->id;
                                     $feature_details->attributeValue_name = $request->attributeValue[$attribute_id][$i];
@@ -526,8 +529,8 @@ class PostController extends Controller
                             }
                         }else{
                             //delete all unselected variation
-                            ProductVariation::where('attribute_id', $attribute_id)->where('post_id', $post_id)->delete();
-                            ProductVariationDetails::where('attribute_id', $attribute_id)->where('post_id', $post_id)->delete();
+                            ProductVariation::where('attribute_id', $attribute_id)->where('product_id', $product_id)->delete();
+                            ProductVariationDetails::where('attribute_id', $attribute_id)->where('product_id', $product_id)->delete();
 
                         }
                     }
@@ -538,11 +541,11 @@ class PostController extends Controller
                     try {
                         foreach($request->features as $feature_id => $feature_name) {
 
-                            $extraFeature = ProductFeature::where('post_id', $post_id)->where('feature_id', $feature_id)->first();
+                            $extraFeature = ProductFeature::where('product_id', $product_id)->where('feature_id', $feature_id)->first();
                             if(!$extraFeature){
                                 $extraFeature = new ProductFeature();
                             }
-                            $extraFeature->post_id = $post_id;
+                            $extraFeature->product_id = $product_id;
                             $extraFeature->feature_id = $feature_id;
                             $extraFeature->name = $feature_name;
                             $extraFeature->value = ($request->featureValue[$feature_id]) ? $request->featureValue[$feature_id] : null;
@@ -558,7 +561,7 @@ class PostController extends Controller
                 if ($request->hasFile('gallery_image')) {
                     $gallery_image = $request->file('gallery_image');
                     foreach ($gallery_image as $image_id => $image) {
-                        $productImage = ProductImage::where('post_id', $post_id)->where('id', $image_id)->first();
+                        $productImage = ProductImage::where('product_id', $product_id)->where('id', $image_id)->first();
 
                         if($productImage){
                             //delete image from folder
@@ -595,7 +598,7 @@ class PostController extends Controller
                         //save image
                         $img->save(public_path('upload/images/product/gallery/' . $new_image_name));
 
-                        $productImage->post_id = $data->id;
+                        $productImage->product_id = $data->id;
                         $productImage->image_path = $new_image_name;
                         $productImage->title = $new_image_name;
                         $productImage->save();
@@ -718,7 +721,7 @@ class PostController extends Controller
         $product = Product::where('id',$request->product_id)->where('user_id', Auth::id())->first();
         if($product){
 
-            $gallery_images = ProductImage::where('post_id',  $product->post_id)->get();
+            $gallery_images = ProductImage::where('product_id',  $product->product_id)->get();
             foreach ($gallery_images as $gallery_image) {
                 $image_path = public_path('upload/images/product/gallery/'. $gallery_image->image_path);
                 if(file_exists($image_path) && $gallery_image->image_path){

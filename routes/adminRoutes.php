@@ -208,6 +208,8 @@ Route::group(['middleware' => 'auth:admin', 'namespace' => 'Admin'], function(){
 		Route::get('edit/{id}', 'AddvertisementController@edit')->name('edit');
 		Route::post('update', 'AddvertisementController@update')->name('update');
 		Route::get('delete/{id}', 'AddvertisementController@delete')->name('delete');
+		Route::get('ad/payment/details/{id}', 'AddvertisementController@adPaymentDetails')->name('paymentDetails');
+		Route::post('ad/payment/status', 'AddvertisementController@changePaymentStatus')->name('changeAdPaymentStatus');
 	});
 
 	//category routes
@@ -468,7 +470,7 @@ Route::group(['middleware' => 'auth:admin', 'namespace' => 'Admin'], function(){
 		//change payment status
 	Route::post('package/payment/status/change', 'PurchasePackageController@changePaymentStatus')->name('changePaymentStatus');
 	Route::get('package/payment/details/check/{order_id}', 'PurchasePackageController@packagePaymentDetails')->name('packagePaymentDetails');
-
+	
 	Route::get('purchase/package/details/{package_id}', 'PurchasePackageController@showpackageDetails')->name('admin.getpackageDetails');
 	Route::get('purchase/package/invoice/{package_id?}', 'PurchasePackageController@packageInvoice')->name('admin.packageInvoice');
 

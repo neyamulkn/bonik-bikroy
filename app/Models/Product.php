@@ -46,7 +46,7 @@ class Product extends Model
     }
 
     public function get_galleryImages(){
-        return $this->hasMany(ProductImage::class, 'post_id', 'post_id');
+        return $this->hasMany(ProductImage::class, 'product_id', 'product_id');
     }
     
     public  function wishlist(){

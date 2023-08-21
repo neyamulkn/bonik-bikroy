@@ -11,6 +11,7 @@ use App\Models\Package;
 use App\Models\ShippingAddress;
 use App\Models\State;
 use App\Models\Zone;
+use App\Models\SellerVerification;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Foundation\Auth\User as Authenticatable;
@@ -66,6 +67,9 @@ class User extends Authenticatable
     }
     public function get_area(){
         return $this->hasOne(Area::class, 'id','area');
+    }
+    public function sellerVerify(){
+        return $this->hasOne(SellerVerification::class, 'seller_id');
     }
     public function posts(){
         return $this->hasMany(Product::class);
