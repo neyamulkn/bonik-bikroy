@@ -134,7 +134,7 @@
                                             <td>{{$customer->email}}</td> 
                                             <td><a href="{{ route('customer.profile', $customer->username) }}" class="label label-info">{{$customer->posts_count}}</a></td>
                                             
-                                            <td @if($permission['is_edit']) onclick="customerStatus({{ $customer->id }}, 'verify')" @endif > @if($customer->verify) <span class="label label-success"> Verified </span> @else <span class="label label-danger">Unverify</span> @endif</td>
+                                            <td> @if($customer->sellerVerify && $customer->sellerVerify->status == "active") <span class="label label-success"> Verified </span>@elseif($customer->sellerVerify && $customer->sellerVerify->status == 'pending') <span class="label label-info">{{$customer->sellerVerify->status}}</span> @elseif($customer->sellerVerify) <span class="label label-danger">{{$customer->sellerVerify->status}}</span> @else <span class="label label-danger">Unverify</span> @endif</td>
                                             <td>
                                                 <span style="cursor:pointer;" class="label @if($customer->status == 'active') label-success @elseif($customer->status == 'band') label-danger @elseif($customer->status == 'deactive') label-warning @else label-info @endif" title="customer Status (pending, active, deactive)" 
                                                @if($permission['is_edit']) onclick="customerStatus({{ $customer->id }})" @endif > {{$customer->status}}</span>

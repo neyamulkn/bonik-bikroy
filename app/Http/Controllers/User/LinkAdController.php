@@ -14,25 +14,8 @@ class LinkAdController extends Controller
 {
 
     public function index(Request $request){
-        $advertisements = Addvertisement::orderBy('id', 'DESC');
-        if($request->title){
-            $advertisements->where('ads_name', 'LIKE', '%'. $request->title .'%');
-        }
-        if($request->adsType && $request->adsType != 'all'){
-            $advertisements->where('adsType', $request->adsType);
-        }if($request->page_name && $request->page_name != 'all'){
-            $advertisements->where('page', $request->page_name);
-        }
-        if($request->status && $request->status != 'all'){
-            $advertisements->where('status', $request->status);
-        }
-        $perPage = 15;
-        if($request->show){
-            $perPage = $request->show;
-        }
-        $advertisements = $advertisements->paginate($perPage);
-        $pages = Page::where('status', 1)->get();
-        return view('user.addvertisement.addvertisement-list')->with(compact('advertisements', 'pages'));
+        $advertisements = Addvertisement::where("user_id", Auth::id())->orderBy('id', 'DESC')->paginate(15);
+        return view('users.linkAds.index')->with(compact('advertisements'));
     }
  
 
@@ -98,21 +81,6 @@ class LinkAdController extends Controller
             //redirect PaypalController for payment process
             $paypal = new PaypalController;
             return $paypal->paypalPayment();
-        }
-        elseif($request->payment_method == 'masterCard'){
-
-            if($request->paymentCard && $request->paymentCard != "other"){
-                $request = json_decode($request->paymentCard, true);
-            }
-            
-            Session::put('payment_data.card_number', $request["card_number"]);
-            Session::put('payment_data.cvc', $request["cvc"]);
-            Session::put('payment_data.month', $request["month"]);
-            Session::put('payment_data.year', $request["year"]);
-
-            //redirect StripeController for payment process
-            $stripe = new StripeController();
-            return $stripe->masterCardPayment();
         }
         else{
             Session::put('payment_data.payment_method', $request->payment_method);
@@ -206,12 +174,12 @@ class LinkAdController extends Controller
             //delete from store folder
             if ($get_ads->image){
                 $image_path = public_path('upload/marketing/' . $get_ads->image);
-                if (file_exists($image_path)) {
+                if (file_exists($image_path) && $get_ads->image) {
                     unlink($image_path);
                 } 
 
                 $image_path = public_path('upload/marketing/' . $get_ads->mobile_image);
-                if (file_exists($image_path)) {
+                if (file_exists($image_path) && $get_ads->mobile_image) {
                     unlink($image_path);
                 } 
             }

@@ -337,4 +337,13 @@ class AjaxController extends Controller
         echo $output;
     }
 
+    public function shareAd(Request $request){
+        $product = Product::find($request->ad_id);
+        if($product){
+            $share  = rand(1, 9);
+            $product->share = $product->share + $share;
+            $product->save();
+        }
+    }
+
 }

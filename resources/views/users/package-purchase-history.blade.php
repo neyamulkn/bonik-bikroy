@@ -59,7 +59,7 @@
                                 @php $total_price = $order->price @endphp
                                 <tr id="{{$order->order_id}}" @if($order->order_status == 'cancel') style="background:#ff000026" @endif >
                                     <td>{{(($orders->perPage() * $orders->currentPage() - $orders->perPage()) + ($index+1) )}}</td>
-                                    <td>@if($order->package_id == 'post_fee') Ad post fee @else <img width="30" src="{{asset('upload/images/package/'.$order->get_package->ribbon)}}"> {{ $order->get_package->name }}
+                                    <td>@if($order->package_id == 'post_fee') Ad post fee @else @if($order->get_package) <img width="30" src="{{asset('upload/images/package/'.$order->get_package->ribbon)}}">  {{ $order->get_package->name }} @endif
                                        <p style="font-size: 12px;margin: 0;padding: 0"> {{\Carbon\Carbon::parse($order->order_date)->format(Config::get('siteSetting.date_format'))}}<br/>
                                     {{\Carbon\Carbon::parse($order->order_date)->format('h:i:s A')}}</p> @endif
                                     </td>

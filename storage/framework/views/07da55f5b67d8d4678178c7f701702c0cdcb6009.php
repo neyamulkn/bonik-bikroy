@@ -179,7 +179,7 @@ article::after {
     width: 100%;
 }
 .iuser {max-height: 180px;width: 100%;object-fit: cover;}
-.d-h-flex td, .d-h-flex th {display: inline-flex;width: 100%;}
+.d-h-flex td, .d-h-flex th {display: inline-flex;width: 100%; gap: 5px}
 }
 </style>
 <header class="bg-white mb-2 hidden-xs">
@@ -202,7 +202,7 @@ article::after {
                     </form>
                     <div class="d-flex align-items-center justify-content-center mt-1 mb-n4">
                         <b class="mr-2">Live Ads : </b>
-                        <b class="pt">4,59,563</b>
+                        <b class="pt"><?php echo e(App\Models\Product::where("status", "active")->count()); ?></b>
                     </div>
                 </div>
                 <div class="col-md-2 col-sm-6 pr-0">

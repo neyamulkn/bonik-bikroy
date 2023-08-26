@@ -37,9 +37,21 @@
             </select>
         </div>
     </div>
-    <div class="col-md-12">
+    <div class="col-md-6">
+     <div class="form-group">
+    <label>Start date</label>
+        <input type="date" value="{{Carbon\Carbon::parse($data->start_date)->format('Y-m-d')}}" required min="{{date('Y-m-d')}}" name="start_date" id="start_date" class="form-control">
+        </div>
+</div>
+<div class="col-md-6">
+     <div class="form-group">
+    <label>End date</label>
+    <input type="date" value="{{Carbon\Carbon::parse($data->end_date)->format('Y-m-d')}}" required min="{{Carbon\Carbon::parse(now())->addDay()->format('Y-m-d')}}" name="end_date" id="end_date" placeholder="link" class="form-control"></div>
+
+</div>
+    <div class="col-md-6">
         <div class="form-group">
-            <label for="position">Select Position</label>
+            <label for="position">Desktop Position</label>
             <select name="position"  required="required" id="position" class="form-control custom-select">
                 <option value="top-content" {{ ($data->position =='top-content') ? 'selected' : '' }}>Top Of the Content</option>
                 <option value="middle-content" {{ ($data->position =='middle-content') ? 'selected' : '' }}>Middle Of the Content</option>
@@ -48,6 +60,22 @@
                <option value="sidebar-middle" {{ ($data->position =='sidebar-middle') ? 'selected' : '' }}>Sidebar Middle </option>
 
                <option value="sidebar-bottom" {{ ($data->position =='sidebar-middle') ? 'selected' : '' }}>Sidebar Bottom </option>
+               
+            </select>
+        </div>
+    </div>    
+
+    <div class="col-md-6">
+        <div class="form-group">
+            <label for="mobile_position">Mobile Position</label>
+            <select name="mobile_position"  required="required" id="mobile_position" class="form-control custom-select">
+                <option value="top-content" {{ ($data->mobile_position =='top-content') ? 'selected' : '' }}>Top Of the Content</option>
+                <option value="middle-content" {{ ($data->mobile_position =='middle-content') ? 'selected' : '' }}>Middle Of the Content</option>
+                <option value="bottom-content" {{ ($data->mobile_position =='bottom-content') ? 'selected' : '' }}>Bottom Of the Content</option>
+                <option value="sidebar-top" {{ ($data->mobile_position =='sidebar-top') ? 'selected' : '' }}>Sidebar Top </option>
+               <option value="sidebar-middle" {{ ($data->mobile_position =='sidebar-middle') ? 'selected' : '' }}>Sidebar Middle </option>
+
+               <option value="sidebar-bottom" {{ ($data->mobile_position =='sidebar-middle') ? 'selected' : '' }}>Sidebar Bottom </option>
                
             </select>
         </div>

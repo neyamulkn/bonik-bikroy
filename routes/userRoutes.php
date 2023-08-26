@@ -72,6 +72,8 @@ route::group(['middleware' => ['auth']], function(){
 
 	Route::get('seller/verification', 'SellerVerificationController@verifyAccount')->name('verifyAccount');
 	Route::post('seller/verification', 'SellerVerificationController@verifyAccountRequest')->name('verifyAccount');
+
+	Route::post('membership/request/send', 'SellerMembershipController@membershipRequest')->name('membershipRequest');
  		
 	
 	route::group(['namespace' => 'User'], function(){
@@ -96,7 +98,9 @@ route::group(['middleware' => ['auth']], function(){
  		Route::post('post/delete', 'PostController@delete')->name('post.delete');
 
 
- 		Route::post('link/add', 'LinkAdController@store')->name('storeLinkAd');
+ 		Route::get('link/ad/list', 'LinkAdController@index')->name('linkAds');
+ 		Route::post('link/ad', 'LinkAdController@store')->name('storeLinkAd');
+ 		Route::get('link/ad/delete/{id}', 'LinkAdController@delete')->name('linkAd.delete');
 
  		Route::get('add/number', 'UserController@addNumber')->name('addNumber');
  		Route::get('verify/number', 'UserController@verifyNumber')->name('verifyNumber');

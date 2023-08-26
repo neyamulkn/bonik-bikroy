@@ -61,11 +61,12 @@
                                             <th>Name</th>
                                             <th>Mobile & Email</th>
                                            
-                                            <th>Posts</th>
-                                            
+                                            <th>Membership</th>
+                                          
                                             <th>NID</th>
                                             <th>Trade license</th>
                                             <th>Address</th>
+                                            
                                             <th>Verify</th>
                                         </tr>
                                     </thead> 
@@ -76,14 +77,17 @@
                                             <td>
                                             @if($customer->owner_photo) <a class="popup-gallery" href="{{asset('upload/users/'.$customer->owner_photo)}}"><img width="50" src="{{asset('upload/users/'.$customer->owner_photo)}}"></a>@endif</td>
                                             <td>
-                                                <a style="display:flex;" class="dropdown-item" title="View Profile" href="{{ route('customer.profile', $customer->username) }}"> 
+                                                <a style="display:flex;" class="dropdown-item" title="View Profile" href="{{ route('customer.profile', $customer->user->username) }}"> 
 
                                                 <p style="padding-left: 3px">{{$customer->shop_name}}<br>
                                                 {{$customer->name}}</p>
                                                 </a>
                                             </td>
                                             <td>{{$customer->mobile}} <br/> {{$customer->email}}</td> 
-                                            <td><a href="{{ route('customer.profile', $customer->username) }}" class="label label-info">{{$customer->posts_count}}</a></td>
+                                            <td>{{str_replace("-", " ", $customer->membership)}} ({{($customer->amount > 0) ? "Premium" : "Free" }})
+                                            </td>
+                                          
+                                            
                                             <td>
                                                 <a class="popup-gallery" href="{{asset('upload/users/'.$customer->nid_front)}}"><img width="50" src="{{asset('upload/users/'.$customer->nid_front)}}"></a>
                                                 <a class="popup-gallery" href="{{asset('upload/users/'.$customer->nid_back)}}"><img width="50" src="{{asset('upload/users/'.$customer->nid_back)}}"></a>
@@ -95,8 +99,9 @@
                                                 @if($customer->trade_license3) <a class="popup-gallery" href="{{asset('upload/users/'.$customer->trade_license3)}}"><img width="50" src="{{asset('upload/users/'.$customer->trade_license3)}}"></a>@endif
 
                                             </td>
-                                            <td>{{ $customer->address }}</td>
-                                            <td onclick="customerStatus({{ $customer->id }}, 'verify')"> @if($customer->verify) <span class="label label-success"> Verified </span> @else <span class="label label-danger">Unverify</span> @endif</td>
+                                            <td> {{ $customer->address }} @if($customer->get_city), {{ $customer->get_city->name }} @endif @if($customer->get_state), {{ $customer->get_state->name }} @endif</td>
+                                            
+                                            <td onclick="customerStatus({{ $customer->seller_id }}, 'verify')"> @if($customer->status == 'active') <span class="label label-success"> Verified </span> @else <span class="label label-danger">{{$customer->status}}</span> @endif</td>
                                            
                                         </tr>
                                         @endforeach

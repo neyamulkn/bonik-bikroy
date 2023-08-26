@@ -61,8 +61,7 @@
                                 <?php $total_price = $order->price ?>
                                 <tr id="<?php echo e($order->order_id); ?>" <?php if($order->order_status == 'cancel'): ?> style="background:#ff000026" <?php endif; ?> >
                                     <td><?php echo e((($orders->perPage() * $orders->currentPage() - $orders->perPage()) + ($index+1) )); ?></td>
-                                    <td><?php if($order->package_id == 'post_fee'): ?> Ad post fee <?php else: ?> <img width="30" src="<?php echo e(asset('upload/images/package/'.$order->get_package->ribbon)); ?>"> <?php echo e($order->get_package->name); ?>
-
+                                    <td><?php if($order->package_id == 'post_fee'): ?> Ad post fee <?php else: ?> <?php if($order->get_package): ?> <img width="30" src="<?php echo e(asset('upload/images/package/'.$order->get_package->ribbon)); ?>">  <?php echo e($order->get_package->name); ?> <?php endif; ?>
                                        <p style="font-size: 12px;margin: 0;padding: 0"> <?php echo e(\Carbon\Carbon::parse($order->order_date)->format(Config::get('siteSetting.date_format'))); ?><br/>
                                     <?php echo e(\Carbon\Carbon::parse($order->order_date)->format('h:i:s A')); ?></p> <?php endif; ?>
                                     </td>

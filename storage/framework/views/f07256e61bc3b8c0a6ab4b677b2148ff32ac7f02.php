@@ -4,7 +4,7 @@
         <div class="col-md-12">
         	<input type="hidden" name="id" value="<?php echo e($order->id); ?>">
             <table class="">
-                <tr><td style="font-weight: bold;">Seller Name:</td><td> <?php echo e($order->customer->name); ?></td></tr>
+                <tr><td style="font-weight: bold;">Customer Name:</td><td> <?php echo e($order->customer->name); ?></td></tr>
                 <tr><td style="font-weight: bold;">Payble Amount:</td><td>  <?php echo e($order->currency_sign . $order->price); ?></td>
                 </tr>
                 

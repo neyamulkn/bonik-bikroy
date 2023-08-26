@@ -126,6 +126,7 @@
                                     </tr>
                                 </thead>
                                 <tbody>
+
                                     <?php if(count($packages)>0): ?>
                                         <?php $__currentLoopData = $packages; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $index => $package): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
                                         <?php 

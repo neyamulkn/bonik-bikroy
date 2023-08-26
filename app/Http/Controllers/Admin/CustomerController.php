@@ -7,6 +7,7 @@ use App\Models\City;
 use App\Models\Transaction;
 use App\Models\Notification;
 use App\Models\Product;
+use App\Models\SellerVerification;
 use App\Traits\Sms;
 use App\User;
 use Brian2694\Toastr\Facades\Toastr;
@@ -102,13 +103,24 @@ class CustomerController extends Controller
     public function customerStatusUpdate(Request $request){
 
         $customer = User::find($request->id);
-        if($request->status && $customer->status != $request->status){
+
+        if($request->status && $customer){
             
             if($request->status == 'verify'){
-                $customer->verify = now();
+                $sellerVerification = SellerVerification::where("seller_id", $request->id)->first();
+                $sellerVerification->status = "active";
+                $sellerVerification->save();
+
+                $customer->verify = $sellerVerification->end_date;
+                $customer->membership = $sellerVerification->membership;
                 $notify = 'Your account has been verified.';
-            }elseif($request->status == 'unverify'){
-                $customer->verify = null;
+            }elseif($request->status == 'reject'){
+                $customer->membership = null;
+                
+                $sellerVerification = SellerVerification::where("seller_id", $request->id)->first();
+                $sellerVerification->status = $request->status;
+                $sellerVerification->reject_reason = $request->reject_reason;
+                $sellerVerification->save();
                 $notify = 'Your account verify request cancel.';
             }else{
                 $customer->status = $request->status;
@@ -134,7 +146,7 @@ class CustomerController extends Controller
 
     //user verify request list
     public function verifyRequest(){
-        $customers  = User::whereNotNull('shop_name')->whereNull('verify')->withCount('posts')->paginate(15);
+        $customers  = SellerVerification::with("user")->where('status', "pending")->withCount('posts')->paginate(25);
         return view('admin.customer.verifyRequest')->with(compact('customers'));
     }
 

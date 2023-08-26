@@ -51,36 +51,14 @@
                                         <a class="bt" target="_blank" href="{{ route('post_details', $post->slug) }}">
                                             {{$post->title}}
                                         </a>
-                                        <p>{{Config::get('siteSetting.currency_symble')}}. {{$post->price}}</p>
-                                        <p>Reach</p>
-                                        <p>React</p>
-                                        <p>Share</p>
-                                        <p>Massage</p>
-                                        <p>Report</p>
-                                        <p>{{Carbon\Carbon::parse(($post->approved) ? $post->approved : $post->created)->format(Config::get('siteSetting.date_format'))}}</p>
-                                        <p>Views {{$post->views}}</p>
-                                        @if($post->approved)
-                                            @if(count($post->get_promotePackage)>0)
-                                                @if(now() <= $post->get_promotePackage[0]->end_date) 
-            
-                                                <div class="clockdiv" data-date="{{$post->get_promotePackage[0]->end_date}}">
-                                                  <div class="count_d">
-                                                    <span class="days">0</span><sub>D</sub>
-                                                  </div>
-                                                  <div class="count_d">
-                                                    <span class="hours">0</span><sub>H</sub>
-                                                    </div>
-                                                    <div class="count_d">
-                                                      <span class="minutes">0</span><sub>M</sub>
-                                                    </div>
-                                                    <div class="count_d">
-                                                      <span class="seconds">0</span><sub>S</sub>
-                                                    </div>
-                                                </div>
-                                                @endif
-                                            @endif
-                                        @endif
-                                        
+                                        <p>Price: {{Config::get('siteSetting.currency_symble')}}. {{$post->price}}</p>
+                                   
+                                        <p>React: {{$post->reacts_count}}</p>
+                                        <p>Share: {{$post->share}}</p>
+                                        <p>Massage: {{$post->messages_count}}</p>
+                                        <p>Report: {{$post->reports_count}}</p>
+                                        <p>Date: {{Carbon\Carbon::parse(($post->approved) ? $post->approved : $post->created)->format(Config::get('siteSetting.date_format'))}}</p>
+                                        <p>Views: {{$post->views}}</p>
                                         @if($post->status == 'Not posted')
                                             @php $last_free_post = App\Models\Product::where('subcategory_id', $post->subcategory_id)->where('user_id', $post->user_id)->where('id', '!=', $post->id)->orderBy('created_at', 'desc')->where('ad_type', 'free')->first();
                                             $days = 0;
@@ -92,12 +70,6 @@
                                             $free_ads_duration = App\Models\SiteSetting::where('type', 'free_ads_limit')->first();
         
                                             @endphp
-                                            
-                                            @if($free_ads_duration->status != 1 || $days >= $free_ads_duration->value )
-                                            <p style="font-size:15px;color: green">Now available free post.</p>
-                                            @else
-                                            <!-- <p style="font-size:15px;color: red">Wait {{$free_ads_duration->value - $days}} days to post for free or pay to post now.</p> -->
-                                            @endif
                                         @else
                                             @if($post->reject_reason)
                                             <p style="font-size:15px;color: red">{{$post->reject_reason}}</p>
@@ -110,10 +82,12 @@
                                         <span class="post-status badge @if($post->status == 'reject')  badge-danger @elseif($post->status == 'Not posted') badge-danger @elseif($post->status == 'active') badge-success @else badge-info @endif"> {{$post->status}} </span>
                                         
                                     </div>
-                                    <div class="actionBtn">
+                                    <div>
                                         <a title="Edit ads" href="{{ route('post.edit', $post->slug) }}"><i class="fa fa-pencil-alt"></i> Edit</a>
+                                    </div>
+                                    <div>
                                         <a href="javascript:void(0)" style="color:red;"  onclick='deleteModal({{$post->id}})' ><i class="fa fa-trash"></i> Delete</a> 
-                                    </div> 
+                                    </div>
                                     <div >
                                         @if($post->status == 'reject')
                                         <a class="btn btn-danger btn-sm" title="Edit ads" href="{{ route('post.edit', $post->slug) }}"><i class="ti-pencil-alt"></i> Edit Post</a>
@@ -124,12 +98,14 @@
         
                                         @elseif($post->status == 'Not posted' || $post->status == 'draft')
                                         <a class="bt btn-primary btn-sm" title="Wait for free or promote ads" href="{{ route('post.edit', $post->slug) }}?status=post-now"><i class="ti-pencil-alt"></i>Continue Editing</a>
+                                        @else
+                                        <a class="bt btn-warning btn-sm" title="Promote ads" href="{{ route('ads.promotePackage', $post->slug) }}"><i class="ti-pencil-alt"></i>@if(count($post->get_promotePackage)>0) Boosted @else Boost Ad @endif</a>
                                         @endif
                                      </div>                                    
                                 </td>
                             </tr>
                             @endforeach
-                            <tr style="margin: 5px">{{$posts->appends(request()->query())->links()}}</tr>
+                            <tr style="margin: 5px"><td colspan="4">{{$posts->appends(request()->query())->links()}}</td></tr>
                         </tbody>
                     </table>
                 </div>

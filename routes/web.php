@@ -23,7 +23,7 @@ Route::get('category-sitemap', 'SitemapController@catSitemap')->name('category-s
 
 
 
-Route::get('/', 'HomeController@index')->name('home');
+Route::get('/', 'HomeController@category')->name('home');
 
 Route::get('ads/{catslug?}/{location?}', 'HomeController@category')->name('home.category');
 //Route::get('location/{location}/{catslug?}', 'HomeController@location')->name('home.location');
@@ -42,13 +42,14 @@ Route::get('checkout/{buy_product_id?}', 'User\CheckoutController@checkout')->na
 Route::get('checkout/shipping/{buy_product_id?}', 'User\CheckoutController@shipping')->name('shipping');
 
 Route::get('check/unique/value', 'AjaxController@checkField')->name('checkField');
+Route::get('ad/share', 'AjaxController@shareAd')->name('shareAd');
+
 //product quickview
 Route::get('quickview/product/{product_id}', 'HomeController@quickview')->name('quickview');
 
 //seller store routes
 Route::get('profile/{username}', 'ShopController@userProfile')->name('userProfile');
 Route::get('shop/{shop_name}/reviews', 'ShopController@shop_reviews')->name('seller_reviews');
-
 Route::get('blog/{catSlug?}', 'FrontPagesController@blog')->name('blog');
 Route::get('blog-details/{slug}', 'FrontPagesController@blog_details')->name('blog_details');
 Route::get('blog/comment/insert', 'FrontPagesController@blog_comment_insert')->name('blog_comment_insert');

@@ -13,7 +13,7 @@ class AddvertisementController extends Controller
 {
 
     public function index(Request $request){
-        $advertisements = Addvertisement::orderBy('id', 'DESC');
+        $advertisements = Addvertisement::with("customer")->orderBy('id', 'DESC');
         if($request->title){
             $advertisements->where('ads_name', 'LIKE', '%'. $request->title .'%');
         }
@@ -61,6 +61,8 @@ class AddvertisementController extends Controller
             'ads_name' => $request->ads_name,
             'adsType' => $request->adsType,
             'page' => $request->page,
+            'start_date' => $request->start_date,
+            'end_date' => $request->end_date,
             'position' => $request->position,
             'mobile_position' => $request->mobile_position,
             'image' => $image_name,
@@ -96,6 +98,8 @@ class AddvertisementController extends Controller
         $data->ads_name = $request->ads_name;
         $data->adsType = $request->adsType;
         $data->page = $request->page;
+        $data->start_date = $request->start_date;
+        $data->end_date = $request->end_date;
         $data->position = $request->position;
         $data->mobile_position = $request->mobile_position;
         $data->redirect_url = $request->redirect_url;

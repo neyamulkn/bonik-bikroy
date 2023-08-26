@@ -5,7 +5,6 @@
         <!-- Sidebar navigation-->
         <nav class="sidebar-nav">
             <ul id="sidebarnav">
-                
                 <?php
                 $role_id = Auth::guard('admin')->user()->role_id;
                
@@ -131,7 +130,7 @@
                     </ul>
                 </li>
            @elseif($module['slug'] == 'manage-users')
-                @php $verifyRequest = App\User::whereNotNull('shop_name')->whereNull('verify')->count(); @endphp
+                @php $verifyRequest = App\Models\SellerVerification::where('status', 'pending')->count(); @endphp
                 @if($role_id == SUPER_ADMIN || ($modulePermission && $modulePermission['is_view'] == 1) )
                 <li> <a class="has-arrow waves-effect waves-dark" href="javascript:void(0)" aria-expanded="false"><i class="fa fa-users"></i><span class="hide-menu">Manage Users <span class="badge badge-pill badge-primary text-white ml-auto">{{ $verifyRequest }}</span></span></a>
                     <ul aria-expanded="false" class="collapse">
@@ -185,7 +184,6 @@
             @endif
             @endforeach
                 <li> <a class="waves-effect waves-dark" href="{{ route('adminLogout') }}"  aria-expanded="false"><i class="fa fa-power-off text-success"></i><span class="hide-menu">Log Out</span></a></li>
-               
             </ul>
         </nav>
         <!-- End Sidebar navigation -->

@@ -48,12 +48,10 @@ class HomeController extends Controller
         $data['products'] = $data['banners'] = $data['product_variations'] = $data['category'] = $data['filterCategories'] = $data['brands'] = [];
         $ads_duration = SiteSetting::where('type', 'free_ads_limit')->first();
         $ads_duration =  Carbon::parse(now())->subDays($ads_duration->value2);
- 
         $category_id = $state_id = $city_id = 0;
         $keyword = $request->q;
         
-
-           $data['category'] = Category::with(['get_subcategory' => function($query) use ($ads_duration){
+            $data['category'] = Category::with(['get_subcategory' => function($query) use ($ads_duration){
                 $query->withCount(['productsBySubcategory']);
             }])->where(function ($query) use ($catslug, $location) {
                 $query->where('slug', $catslug)->orWhere('slug', $location);
@@ -87,189 +85,207 @@ class HomeController extends Controller
             $price_min = ($request->price_min) ? $request->price_min : null;
             $price_max = ($request->price_max) ? $request->price_max : null;
 
+            //get banner promote ads by category
+            $bannerAds = PromoteAds::join("users", "users.id", "promote_ads.user_id")->join("products", "products.id", "promote_ads.ads_id")->join("states", "states.id", "products.state_id")->join("packages", "packages.id", "promote_ads.package_id")->where('package_id', 5)->where('start_date', '<=', now())->where('end_date', '>=', now());
 
-            //get spotlights promote ads by category
-            $data['spotlights'] = PromoteAds::with(['user','get_adPost', 'get_adPackage'])->where('package_id', 7)->whereHas('get_adPost', function($query) use ($category_id, $state_id, $city_id, $keyword, $sortby, $price_min, $price_max){
-                    $query->where('status', 'active');
+                if($category_id){
+                $bannerAds->where(function ($q) use ($category_id) { $q->orWhere('products.category_id', $category_id)->orWhere('products.subcategory_id', $category_id);});
+                }
+                if($state_id){
+                    $bannerAds->where('state_id', $state_id);
+                }if($city_id){
+                    $bannerAds->where('city_id', $city_id);
+                }
+                if ($keyword) {
+                    $bannerAds->where('title', 'like', '%' . $keyword . '%');
+                }
+                $field = 'promote_ads.id'; $value = 'desc';
+                if ($sortby) {
+                    try {
+                        $sort = explode('-', $sortby);
+                        if ($sort[0] == 'name') {
+                            $field = 'title';
+                        } elseif ($sort[0] == 'price') {
+                            $field = 'price';
+                        } else {
+                            $field = 'promote_ads.id';
+                        }
+                        $value = ($sort[1] == 'a' || $sort[1] == 'l') ? 'asc' : 'desc';
+                        $bannerAds->orderBy($field, $value);
+                    }catch (\Exception $exception){}
+                }else{
+                    $bannerAds->orderBy($field, $value);
+                }
+               
+                //check price keyword
+                if ($price_min) {
+                    $bannerAds->where('price', '>=', $price_min);
+                }if ($price_max) {
+                    $bannerAds->where('price', '<=', $price_max);
+                }
+                $data["bannerAds"] = $bannerAds->inRandomOrder()->take(7)->where('products.status', 'active')->where('promote_ads.status', 1)->selectRaw("products.title, products.id,products.slug,products.feature_image,products.price, sale_type, post_type, ads_id, packages.ribbon, states.name as state_name, users.name,users.username")->get();
 
-                    if($category_id){
-                    $query->where(function ($q) use ($category_id) { $q->orWhere('category_id', $category_id)->orWhere('subcategory_id', $category_id);});
-                    }
+            //get pin promote ads by category
+            $pinAds = PromoteAds::join("users", "users.id", "promote_ads.user_id")->join("products", "products.id", "promote_ads.ads_id")->join("states", "states.id", "products.state_id")->join("packages", "packages.id", "promote_ads.package_id")->where('package_id', 3)->where('start_date', '<=', now())->where('end_date', '>=', now());
 
-                    if($state_id){
-                        $query->where('state_id', $state_id);
-                    }if($city_id){
-                        $query->where('city_id', $city_id);
-                    }
+                if($category_id){
+                    $pinAds->where(function ($q) use ($category_id) { $q->orWhere('products.category_id', $category_id)->orWhere('products.subcategory_id', $category_id);});
+                }
+                if($state_id){
+                    $pinAds->where('state_id', $state_id);
+                }if($city_id){
+                    $pinAds->where('city_id', $city_id);
+                }
+                if ($keyword) {
+                    $pinAds->where('title', 'like', '%' . $keyword . '%');
+                }
+                $field = 'promote_ads.id'; $value = 'desc';
+                if ($sortby) {
+                    try {
+                        $sort = explode('-', $sortby);
+                        if ($sort[0] == 'name') {
+                            $field = 'title';
+                        } elseif ($sort[0] == 'price') {
+                            $field = 'price';
+                        } else {
+                            $field = 'promote_ads.id';
+                        }
+                        $value = ($sort[1] == 'a' || $sort[1] == 'l') ? 'asc' : 'desc';
+                        $pinAds->orderBy($field, $value);
+                    }catch (\Exception $exception){}
+                }else{
+                    $pinAds->orderBy($field, $value);
+                }
+               
+                //check price keyword
+                if ($price_min) {
+                    $pinAds->where('price', '>=', $price_min);
+                }if ($price_max) {
+                    $pinAds->where('price', '<=', $price_max);
+                }
+                $data["pinAds"] = $pinAds->inRandomOrder()->take(2)->where('products.status', 'active')->where('promote_ads.status', 1)->selectRaw("products.title, products.id,products.slug,products.feature_image,products.price, sale_type, post_type, ads_id, packages.ribbon, states.name as state_name, users.name,users.username")->get();
 
-                    if ($keyword) {
-                        $query->where('title', 'like', '%' . $keyword . '%');
-                    }
-
-                   
-                    $field = 'id'; $value = 'desc';
-                    if ($sortby) {
-                        try {
-                            $sort = explode('-', $sortby);
-                            if ($sort[0] == 'name') {
-                                $field = 'title';
-                            } elseif ($sort[0] == 'price') {
-                                $field = 'price';
-                            } else {
-                                $field = 'id';
-                            }
-                            $value = ($sort[1] == 'a' || $sort[1] == 'l') ? 'asc' : 'desc';
-                            $query->orderBy($field, $value);
-                        }catch (\Exception $exception){}
-                    }else{
-                        $query->orderBy($field, $value);
-                    }
-                   
-                    //check price keyword
-                    if ($price_min) {
-                        $query->where('price', '>=', $price_min);
-                    }if ($price_max) {
-                        $query->where('price', '<=', $price_max);
-                    }
-
-                })->where('start_date', '<=', now())->where('end_date', '>=', now())->inRandomOrder()->take(10)->where('status', 1)->get();
-            
-        
             //get promote ads by category
-            $data['urgentAds'] = PromoteAds::with(['user','get_adPost', 'get_adPost', 'get_adPackage'])->where('package_id', 8)->whereHas('get_adPost', function($query) use ($category_id, $state_id, $city_id, $keyword, $sortby, $price_min, $price_max){
-                    $query->where('status', 'active');
+            $urgentAds = PromoteAds::join("users", "users.id", "promote_ads.user_id")->join("products", "products.id", "promote_ads.ads_id")->join("states", "states.id", "products.state_id")->join("packages", "packages.id", "promote_ads.package_id")->where('package_id', 4)->where('start_date', '<=', now())->where('end_date', '>=', now());
 
-                    if($category_id){
-                    $query->where(function ($q) use ($category_id) { $q->orWhere('category_id', $category_id)->orWhere('subcategory_id', $category_id);});
-                    }
-
-                    if($state_id){
-                        $query->where('state_id', $state_id);
-                    }if($city_id){
-                        $query->where('city_id', $city_id);
-                    }
-
-                    if ($keyword) {
-                        $query->where('title', 'like', '%' . $keyword . '%');
-                    }
-                    $field = 'id'; $value = 'desc';
-                    if ($sortby) {
-                        try {
-                            $sort = explode('-', $sortby);
-                            if ($sort[0] == 'name') {
-                                $field = 'title';
-                            } elseif ($sort[0] == 'price') {
-                                $field = 'price';
-                            } else {
-                                $field = 'id';
-                            }
-                            $value = ($sort[1] == 'a' || $sort[1] == 'l') ? 'asc' : 'desc';
-                            $query->orderBy($field, $value);
-                        }catch (\Exception $exception){}
-                    }else{
-                        $query->orderBy($field, $value);
-                    }
-                   
-                    //check price keyword
-                    if ($price_min) {
-                        $query->where('price', '>=', $price_min);
-                    }if ($price_max) {
-                        $query->where('price', '<=', $price_max);
-                    }
-                })->where('start_date', '<=', now())->where('end_date', '>=', now())->inRandomOrder()->take(4)->where('status', 1)->get();
-          
-             //get promote ads by category
-            $data['featureAds'] = PromoteAds::with(['user','get_adPost', 'get_adPackage'])->where('package_id', 4)->whereHas('get_adPost', function($query) use ($category_id, $state_id, $city_id, $keyword, $sortby, $price_min, $price_max){
-                    $query->where('status', 'active');
-
-                    if($category_id){
-                    $query->where(function ($q) use ($category_id) { $q->orWhere('category_id', $category_id)->orWhere('subcategory_id', $category_id);});
-                    }
-
-                    if($state_id){
-                        $query->where('state_id', $state_id);
-                    }if($city_id){
-                        $query->where('city_id', $city_id);
-                    }
-
-                    if ($keyword) {
-                        $query->where('title', 'like', '%' . $keyword . '%');
-                    }
-                    $field = 'id'; $value = 'desc';
-                    if ($sortby) {
-                        try {
-                            $sort = explode('-', $sortby);
-                            if ($sort[0] == 'name') {
-                                $field = 'title';
-                            } elseif ($sort[0] == 'price') {
-                                $field = 'price';
-                            } else {
-                                $field = 'id';
-                            }
-                            $value = ($sort[1] == 'a' || $sort[1] == 'l') ? 'asc' : 'desc';
-                            $query->orderBy($field, $value);
-                        }catch (\Exception $exception){}
-                    }else{
-                        $query->orderBy($field, $value);
-                    }
-                   
-                    //check price keyword
-                    if ($price_min) {
-                        $query->where('price', '>=', $price_min);
-                    }if ($price_max) {
-                        $query->where('price', '<=', $price_max);
-                    }
-                })->where('start_date', '<=', now())->where('end_date', '>=', now())->inRandomOrder()->take(3)->where('status', 1)->get();
-
+                if($category_id){
+                $urgentAds->where(function ($q) use ($category_id) { $q->orWhere('products.category_id', $category_id)->orWhere('products.subcategory_id', $category_id);});
+                }
+                if($state_id){
+                    $urgentAds->where('state_id', $state_id);
+                }if($city_id){
+                    $urgentAds->where('city_id', $city_id);
+                }
+                if ($keyword) {
+                    $urgentAds->where('title', 'like', '%' . $keyword . '%');
+                }
+                $field = 'promote_ads.id'; $value = 'desc';
+                if ($sortby) {
+                    try {
+                        $sort = explode('-', $sortby);
+                        if ($sort[0] == 'name') {
+                            $field = 'title';
+                        } elseif ($sort[0] == 'price') {
+                            $field = 'price';
+                        } else {
+                            $field = 'promote_ads.id';
+                        }
+                        $value = ($sort[1] == 'a' || $sort[1] == 'l') ? 'asc' : 'desc';
+                        $urgentAds->orderBy($field, $value);
+                    }catch (\Exception $exception){}
+                }else{
+                    $urgentAds->orderBy($field, $value);
+                }
+               
+                //check price keyword
+                if ($price_min) {
+                    $urgentAds->where('price', '>=', $price_min);
+                }if ($price_max) {
+                    $urgentAds->where('price', '<=', $price_max);
+                }
+                $data["urgentAds"] = $urgentAds->inRandomOrder()->take(2)->where('products.status', 'active')->where('promote_ads.status', 1)->selectRaw("products.title, products.id,products.slug,products.feature_image,products.price, sale_type, post_type, ads_id, packages.ribbon, states.name as state_name, users.name,users.username")->get();
             
-            //get promote ads by category
-            $data['topUpAds'] = PromoteAds::with(['user','get_adPost', 'get_adPackage'])->where('package_id', 5)->whereHas('get_adPost', function($query) use ($category_id, $state_id, $city_id, $keyword, $sortby, $price_min, $price_max){
-                    $query->where('status', 'active');
+            //get highlights promote ads by category
+            $highlightAds = PromoteAds::join("users", "users.id", "promote_ads.user_id")->join("products", "products.id", "promote_ads.ads_id")->join("states", "states.id", "products.state_id")->join("packages", "packages.id", "promote_ads.package_id")->where('package_id', 2)->where('start_date', '<=', now())->where('end_date', '>=', now());
 
-                    if($category_id){
-                    $query->where(function ($q) use ($category_id) { $q->orWhere('category_id', $category_id)->orWhere('subcategory_id', $category_id);});
-                    }
+                if($category_id){
+                $highlightAds->where(function ($q) use ($category_id) { $q->orWhere('products.category_id', $category_id)->orWhere('products.subcategory_id', $category_id);});
+                }
+                if($state_id){
+                    $highlightAds->where('state_id', $state_id);
+                }if($city_id){
+                    $highlightAds->where('city_id', $city_id);
+                }
+                if ($keyword) {
+                    $highlightAds->where('title', 'like', '%' . $keyword . '%');
+                }
+                $field = 'promote_ads.id'; $value = 'desc';
+                if ($sortby) {
+                    try {
+                        $sort = explode('-', $sortby);
+                        if ($sort[0] == 'name') {
+                            $field = 'title';
+                        } elseif ($sort[0] == 'price') {
+                            $field = 'price';
+                        } else {
+                            $field = 'promote_ads.id';
+                        }
+                        $value = ($sort[1] == 'a' || $sort[1] == 'l') ? 'asc' : 'desc';
+                        $highlightAds->orderBy($field, $value);
+                    }catch (\Exception $exception){}
+                }else{
+                    $highlightAds->orderBy($field, $value);
+                }
+               
+                //check price keyword
+                if ($price_min) {
+                    $highlightAds->where('price', '>=', $price_min);
+                }if ($price_max) {
+                    $highlightAds->where('price', '<=', $price_max);
+                }
+                $data["highlightAds"] = $highlightAds->inRandomOrder()->take(1)->where('products.status', 'active')->where('promote_ads.status', 1)->selectRaw("products.title, products.id,products.slug,products.feature_image,products.price, sale_type, post_type, ads_id, packages.ribbon, states.name as state_name, users.name,users.username")->get();
 
-                    if($state_id){
-                        $query->where('state_id', $state_id);
-                    }if($city_id){
-                        $query->where('city_id', $city_id);
-                    }
+            //get fast promote ads by category
+            $fastAds = PromoteAds::join("users", "users.id", "promote_ads.user_id")->join("products", "products.id", "promote_ads.ads_id")->join("states", "states.id", "products.state_id")->join("packages", "packages.id", "promote_ads.package_id")->where('package_id', 1)->where('start_date', '<=', now())->where('end_date', '>=', now());
 
-                    if ($keyword) {
-                        $query->where('title', 'like', '%' . $keyword . '%');
-                    }
-
-                   
-                    $field = 'id'; $value = 'desc';
-                    if ($sortby) {
-                        try {
-                            $sort = explode('-', $sortby);
-                            if ($sort[0] == 'name') {
-                                $field = 'title';
-                            } elseif ($sort[0] == 'price') {
-                                $field = 'price';
-                            } else {
-                                $field = 'id';
-                            }
-                            $value = ($sort[1] == 'a' || $sort[1] == 'l') ? 'asc' : 'desc';
-                            $query->orderBy($field, $value);
-                        }catch (\Exception $exception){}
-                    }else{
-                        $query->orderBy($field, $value);
-                    }
-                   
-                    //check price keyword
-                    if ($price_min) {
-                        $query->where('price', '>=', $price_min);
-                    }if ($price_max) {
-                        $query->where('price', '<=', $price_max);
-                    }
-
-                })->where('start_date', '<=', now())->where('end_date', '>=', now())->inRandomOrder()->take(4)->where('status', 1)->get();
+                if($category_id){
+                    $fastAds->where(function ($q) use ($category_id) { $q->orWhere('products.category_id', $category_id)->orWhere('products.subcategory_id', $category_id);});
+                }
+                if($state_id){
+                    $fastAds->where('state_id', $state_id);
+                }if($city_id){
+                    $fastAds->where('city_id', $city_id);
+                }
+                if ($keyword) {
+                    $fastAds->where('title', 'like', '%' . $keyword . '%');
+                }
+                $field = 'promote_ads.id'; $value = 'desc';
+                if ($sortby) {
+                    try {
+                        $sort = explode('-', $sortby);
+                        if ($sort[0] == 'name') {
+                            $field = 'title';
+                        } elseif ($sort[0] == 'price') {
+                            $field = 'price';
+                        } else {
+                            $field = 'promote_ads.id';
+                        }
+                        $value = ($sort[1] == 'a' || $sort[1] == 'l') ? 'asc' : 'desc';
+                        $fastAds->orderBy($field, $value);
+                    }catch (\Exception $exception){}
+                }else{
+                    $fastAds->orderBy($field, $value);
+                }
+               
+                //check price keyword
+                if ($price_min) {
+                    $fastAds->where('price', '>=', $price_min);
+                }if ($price_max) {
+                    $fastAds->where('price', '<=', $price_max);
+                }
+                $data["fastAds"] = $fastAds->inRandomOrder()->take(1)->where('products.status', 'active')->where('promote_ads.status', 1)->selectRaw("products.title, products.id,products.slug,products.feature_image,products.price, sale_type, post_type, ads_id, packages.ribbon, states.name as state_name, users.name,users.username")->get();
             
-            
-            $products = Product::with(['author', 'wishlist'])->where('status', 'active');
+            $products = Product::with(["get_state","wishlist"])->join("users", "users.id", "products.user_id")->where('products.status', 'active');
 
             if($ads_duration){
                 $products->where('approved', '>=', $ads_duration); 
@@ -314,7 +330,7 @@ class HomeController extends Controller
                     $query->whereIn('slug', $brand);
                 });
             }
-            $field = 'id'; $value = 'desc';
+            $field = 'products.id'; $value = 'desc';
             if (isset($request->sortby) && $request->sortby) {
                 try {
                     $sort = explode('-', $request->sortby);
@@ -338,30 +354,23 @@ class HomeController extends Controller
                 $products->where('price', '<=', $request->price_max);
             }
             
-             //remove promote ads
-             $urgentAds_id = $data['urgentAds']->toArray();
-            $urgentAds_id = array_column($urgentAds_id, 'ads_id');
-             $topUpAds_id = $data['topUpAds']->toArray();
-            $topUpAds_id = array_column($topUpAds_id, 'ads_id');
-            $spotlights = $data['spotlights']->toArray();
-            $spotlights_id = array_column($spotlights, 'ads_id');
-            $featureAds_id = $data['featureAds']->toArray();
-            $featureAds_id = array_column($featureAds_id, 'ads_id');
-            
-            $promoteAdPosts_id = array_merge($featureAds_id, $topUpAds_id, $spotlights_id);
-      
-            $products->whereNotIn('id', $promoteAdPosts_id);
+            //remove promote ads
+            $pinAds_id = array_column($data['pinAds']->toArray(), 'ads_id');
+            $urgentAds_id = array_column($data['urgentAds']->toArray(), 'ads_id');
+            $highlightAds_id = array_column($data['highlightAds']->toArray(), 'ads_id');
+            $fastAds_id = array_column($data['fastAds']->toArray(), 'ads_id');
+            $promoteAdPosts_id = array_merge($pinAds_id, $urgentAds_id, $highlightAds_id, $fastAds_id);
+
+            $products->whereNotIn('products.id', $promoteAdPosts_id);
 
             //check perPage
-            $promoteAds = count($data['topUpAds']) + count($data['featureAds']) + count($data['urgentAds']) + count($data['spotlights']);
+            $promoteAds = count($data['pinAds']) + count($data['urgentAds']) + count($data['highlightAds']) + count($data['fastAds']);
             //check perPage
-            $perPage = 25 - $promoteAds;
+            $perPage = 21 - $promoteAds;
             if (isset($request->perPage) && $request->perPage) {
                 $perPage = $request->perPage - $promoteAds;
             }
 
-            $products->selectRaw('id,title,slug,price,brand_id,category_id,category_id,state_id,views,post_type,sale_type, user_id, feature_image,created_at,approved');
-            
             $data['product_variations'] = ProductAttribute::withCount(['get_productVariationDetails', 'get_productVariationDetails as get_product_variation_details_count' => function($query){
                 $query->where('get_product_variation_details_count', '>', 0);
             }])->with(['get_attrValues' => function($query) use ($ads_duration,$category_id, $state_id, $city_id){
@@ -378,7 +387,7 @@ class HomeController extends Controller
                 }]);
             }])->where('category_id', $category_id)->where('is_filter', 1)->get();
 
-           //check weather ajax request identify filter parameter
+            //check weather ajax request identify filter parameter
             foreach ($data['product_variations'] as $filterAttr) {
                 $filter = strtolower(str_replace(' ', '', $filterAttr->name));
             
@@ -393,18 +402,19 @@ class HomeController extends Controller
                     //get product id from url filter id (size=1,2)
                     $productsFilter = ProductVariationDetails::join('product_attribute_values', 'product_variation_details.attributeValue_name', 'product_attribute_values.id')->whereIn('name', $tags)->groupBy('product_id')->get()->pluck('product_id');
 
-                    $products->whereIn('id', $productsFilter);
+                    $products->whereIn('products.id', $productsFilter);
                 }
             }
 
             //get product id for Category states count post
-            $get_products  = $products->get()->toArray();
-            $product_id = array_column($get_products, 'id');
+            $get_products = $products->selectRaw('title,products.id,slug,price,brand_id,category_id,category_id,state_id,views,post_type,sale_type, user_id, feature_image,products.created_at,approved, users.name,users.username')->get()->toArray();
+                $product_id = array_column($get_products, 'id');
           
-            
-            $data['products'] = $products->paginate($perPage);
+        $data['products'] = $products->paginate($perPage);
 
-        $data['get_ads'] = Addvertisement::whereIn('page', ['/', 'all'])->inRandomOrder()->where('status', 1)->get();
+        $data['get_ads'] = Addvertisement::whereIn('page', ['/', 'all'])->whereNull("user_id")->inRandomOrder()->where('status', 1)->get();
+
+        $data['link_ads'] = Addvertisement::whereNotNull("user_id")->take(2)->inRandomOrder()->where('status', 1)->get()->toArray();
 
         $data['get_category'] = Category::with(['get_subcategory' => function($query){ $query->withCount('productsBySubcategory');} ])->withCount(['productsByCategory' => function($query) use ($product_id){
                     $query->whereIn('id', $product_id);
@@ -423,7 +433,6 @@ class HomeController extends Controller
         if($request->filter){
             return view('frontend.post-filter')->with($data);
         }else{
-            
             return view('frontend.category-details')->with($data);
         }
     }
@@ -437,7 +446,7 @@ class HomeController extends Controller
 
             $data['state'] = State::with(['get_city' => function($query){
                 $query->withCount('productsByCity');}])
-                ->withCount('productsByState')->where('states.slug', $location)->leftJoin('cities', 'states.id', 'cities.state_id')->orWhere('cities.slug', $location)->orderBy('states.name', 'asc')->selectRaw('states.*')->first();
+                ->withCount('productsByState')->where('states.slug', $location)->leftJoin('cities', 'states.id', 'cities.state_id')->orWhere('cities.slug', $location)->orderBy('states.name as state_name', 'asc')->selectRaw('states.*')->first();
             
             $category = Category::with(['get_subcategory' => function($query){
                 $query->withCount('productsBySubcategory');

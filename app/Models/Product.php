@@ -53,6 +53,18 @@ class Product extends Model
         return $this->hasOne(Wishlist::class, 'product_id')->where('user_id', Auth::id());
     }
 
+    public function messages(){
+        return $this->hasMany(Conversation::class, 'product_id');
+    }
+
+    public  function reports(){
+        return $this->hasMany(ReportReason::class, 'product_id');
+    }
+
+    public function reacts(){
+        return $this->hasMany(Wishlist::class, 'product_id');
+    }
+
 
     public  function author(){
         return $this->belongsTo(User::class, 'user_id');

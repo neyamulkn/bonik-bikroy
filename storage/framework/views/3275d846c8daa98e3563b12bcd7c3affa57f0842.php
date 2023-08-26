@@ -43,8 +43,7 @@
     <section class="user-area">
         <div class="container">
             <div class="row">
-                <!--Right Part Start -->
-                <?php echo $__env->make('users.inc.sidebar', \Illuminate\Support\Arr::except(get_defined_vars(), ['__data', '__path']))->render(); ?>
+               
                 <!--Middle Part Start-->
                 <div class="col-md-12 sticky-conent">
                     <?php if($product->status == 'reject'): ?>
@@ -280,92 +279,19 @@
                                         <span id="moreMobile"><a onclick="moreMobile()" href="javascript:void(0)">Add another mobile number</a></span>
                                     </div>
                                     
-                                    <label><input id="contact_hidden" <?php if($product->contact_hidden == 1): ?> checked <?php endif; ?> name="contact_hidden" type="checkbox" value="1"> Hide mobile number(s)</label>
+                                    <input id="contact_hidden" <?php if($product->contact_hidden == 1): ?> checked <?php endif; ?> name="contact_hidden" type="checkbox" value="1">
+                                    <label for="contact_hidden">Hide mobile number(s)</label>
+                                    
                                 </div>
                             </div>
-                        </div>
-                        <div class="adpost-card">
-                            <div class="row offset-md-2">
-                                <?php if(count($packageTypes)>1): ?>
-                                <div class="col-md-10">
-                                    <div class="adpost-title" style="text-align: center;">
-                                        <h3 >Promote your ad</h3>
-                                        <p>Want to sell faster choose one of the following options to post your ad</p>
-                                    </div>
-                                    <ul class="adpost-plan-list">
-                                        <?php $activePackage = null; ?>
-                                        <?php $__currentLoopData = $packageTypes; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $package): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
-                                        <?php if(count($package->get_purchasePackages)>0 || count($package->get_packageVlues)>0): ?>
-                                            <?php $activePackage = 1; ?>
-                                            <?php if(count($package->get_purchasePackages)>0): ?>
-                                                       
-                                            <label class="packageBox" for="package<?php echo e($package->id); ?>">
-
-                                                <div class="adpost-plan-content purchasPackvalue">
-                                                    <h6 style="display: flex;"> <input  type="checkbox" value="<?php echo e($package->id); ?>" name="package[]" id="package<?php echo e($package->id); ?>"> <span style="background: <?php echo e($package->background_color); ?>; color:<?php echo e($package->text_color); ?>;margin-left: 8px; padding: 5px 5px;border-radius: 3px;"> <?php echo e($package->name); ?> </span></h6>
-                                                    <p class="package_details"><?php echo e($package->details); ?>  <?php if($package->promote_demo): ?> <a onclick="promteDemo('<?php echo $package->id; ?>')" href="javascript:void(0)"><i class="fa fa-eye"></i> See Example</a><?php endif; ?></p>
-                                                    
-                                                </div>
-                                                <div class="packageValueList">
-                                                     
-                                                        <select name="purchasPackvalue[<?php echo e($package->id); ?>]">
-                                                        <?php $__currentLoopData = $package->get_purchasePackages; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $index => $packageValue): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
-
-                                                        <option value="<?php echo e($packageValue->id); ?>"><?php echo e($packageValue->duration); ?> days  - <?php echo e(config('siteSetting.currency_symble') . $packageValue->price); ?></option>
-                                                       
-                                                        <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
-                                                        </select>
-                                                   
-                                                </div>
-                                            </label>
-                                            <?php else: ?>
-                                            <label class="packageBox" for="package<?php echo e($package->id); ?>">
-
-                                                <div class="adpost-plan-content package">
-                                                    <h6 style="display: flex;"> <input onclick="packageBox()" type="checkbox" value="<?php echo e($package->id); ?>" name="package[]" id="package<?php echo e($package->id); ?>"> <span style="background: <?php echo e($package->background_color); ?>; color:<?php echo e($package->text_color); ?>;margin-left: 8px; padding: 5px 5px;border-radius: 3px;"> <?php echo e($package->name); ?> </span></h6>
-                                                    <p class="package_details"><?php echo e($package->details); ?>  <?php if($package->promote_demo): ?> <a onclick="promteDemo('<?php echo $package->id; ?>')" href="javascript:void(0)"><i class="fa fa-eye"></i> See Example</a><?php endif; ?></p>
-                                                    
-                                                </div>
-                                                <div class="packageValueList">
-                                                   
-                                                        <select name="packageValue[<?php echo e($package->id); ?>]" onchange="packageBox()" class ="packvalue">
-                                                        <?php $__currentLoopData = $package->get_packageVlues; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $index => $packageValue): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
-                                                        <option data-price="<?php echo e($packageValue->price); ?>" data-package="<?php echo e($package->id); ?>" value="<?php echo e($packageValue->id); ?>"><?php echo e($packageValue->duration); ?> days - <?php echo e(config('siteSetting.currency_symble') . $packageValue->price); ?> </option>
-
-                                                        <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
-                                                        </select>
-                                                    
-                                                </div>
-                                            </label>
-
-                                            <?php endif; ?>
-                                        <?php endif; ?>
-                                        <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
-
-                                        <?php if($activePackage): ?>
-                                        <label class="packageBox" for="allCheck">
-
-                                        <div class="adpost-plan-content">
-                                            <h6 style="display: flex;"> <input  type="checkbox" id="allCheck"><span style="padding: 5px;"> Select all </span></h6>
-                                        </div></label><?php endif; ?>
-                                    </ul>
-                                </div>
-                                <?php endif; ?>
-                                <div class="col-md-10">
-                                    <?php $ads_fee = ($subcategory && $subcategory->post_fee > 0) ? $subcategory->post_fee : 0; ?>
-                                    <input type="hidden" class="postPrice" value="<?php echo e($ads_fee); ?>" name="postPrice">
-                                    <div style="display: flex;background: #585252;color: #fff;padding: 5px;     justify-content: space-between;margin-bottom: 5px;"><strong>Total</strong> <p id="TotalPrice"><?php if($ads_fee > 0): ?> <?php echo e(config('siteSetting.currency_symble').$ads_fee); ?>  <?php else: ?> Free <?php endif; ?></p></div>
-                               
-                                <div class="form-group text-right">
-                                    <button style="width: 100%;" class="btn btn-inline">
-                                        <i class="fas fa-check-circle"></i>
-                                        <span>Update Your Ad</span>
-                                    </button>
-                                </div>
-                                </div>
+                            <div class="form-group text-right">
+                                <button style="width: 100%;" class="btn btn-inline">
+                                    <i class="fas fa-check-circle"></i>
+                                    <span>Update Your Ad</span>
+                                </button>
                             </div>
                         </div>
-                        
+                        </div>
                     </form>
                     </div>
                 </div>
@@ -460,7 +386,7 @@
         <div>
         Add mobile number
         <div style="position: relative;margin-right: 10px;width: 300px;">
-        <input type="number" id="number" value="`+number+`" required name="contact_mobile" class="form-control" placeholder="Enter your number">
+        <input type="number" id="number" value="`+number+`" required name="mobile" class="form-control" placeholder="Enter your number">
         <span class="adjust-field" onclick="addNumber()"> Add</span>
         </div>
         </div>
@@ -509,45 +435,6 @@
             moreMobile();
        }
     }
-
-        function packageBox(){
-        var total = <?php echo e($ads_fee); ?>;
-
-        $('.package :checked').each(function () {
-        var packageId = (this.checked ? $(this).val() : "");
-        
-        $('.packvalue :selected').each(function () {
-
-            if($(this).data('package') == packageId){
-                var price = $(this).data('price');
-                total = parseInt(total) + parseInt(price);
-            }
-
-            });
-        });
-
-        if(total > 0){
-            $('#TotalPrice').html("<?php echo e(config('siteSetting.currency_symble')); ?>" + total);
-            $('.postPrice').val(total);
-        }else{
-            $('#TotalPrice').html('Free');
-        }
-
-        if($('.package :checked').length == $('.package').length){
-            $('#allCheck').prop('checked', true); 
-        }else{
-            $('#allCheck').prop('checked', false); 
-        }
-
-       
-    }
-
-    $("#allCheck").click(function(){
-       
-        $('.package input:checkbox').not(this).prop('checked', this.checked);
-        $('.purchasPackvalue input:checkbox').not(this).prop('checked', this.checked);
-        packageBox();
-    });
 
     </script>
 <?php $__env->stopSection(); ?>

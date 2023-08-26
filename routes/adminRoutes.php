@@ -201,6 +201,25 @@ Route::group(['middleware' => 'auth:admin', 'namespace' => 'Admin'], function(){
 	Route::get('update/data', 'PackageController@updateData')->name('admin.updateData');
 
 
+	// membership routes
+	Route::get('membership', 'MembershipController@membership_create')->name('membership');
+	Route::post('membership/store', 'MembershipController@membership_store')->name('membership.store');
+
+	Route::get('membership/edit/{id}', 'MembershipController@membership_edit')->name('membership.edit');
+	Route::post('membership/update', 'MembershipController@membership_update')->name('membership.update');
+	Route::get('membership/delete/{id}', 'MembershipController@membership_delete')->name('membership.delete');
+
+	// membership duration routes
+	Route::get('membership/duration/{slug}/list', 'MembershipController@membershipDuration')->name('membershipDuration');
+	Route::post('membership/duration/store', 'MembershipController@membershipDuration_store')->name('membershipDuration.store');
+	Route::get('membership/duration/list', 'MembershipController@membershipDuration_list')->name('membershipDuration.list');
+	Route::get('membership/duration/edit/{id}', 'MembershipController@membershipDuration_edit')->name('membershipDuration.edit');
+	Route::post('membership/duration/update', 'MembershipController@membershipDuration_update')->name('membershipDuration.update');
+	Route::get('membership/duration/delete/{id}', 'MembershipController@membershipDuration_delete')->name('membershipDuration.delete');
+
+	Route::get('membership/request/list', 'MembershipController@membershipRequests')->name('membershipRequests');
+	Route::post('membership/request/update', 'MembershipController@membershipRequestUpdate')->name('membershipRequestUpdate');
+
 	Route::prefix('advertisement')->name('addvertisement.')->group( function(){
         Route::get('list', 'AddvertisementController@index')->name('list');
 		Route::get('create', 'AddvertisementController@create')->name('create');

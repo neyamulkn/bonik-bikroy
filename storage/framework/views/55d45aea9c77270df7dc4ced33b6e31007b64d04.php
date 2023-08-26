@@ -52,36 +52,14 @@
                                             <?php echo e($post->title); ?>
 
                                         </a>
-                                        <p><?php echo e(Config::get('siteSetting.currency_symble')); ?>. <?php echo e($post->price); ?></p>
-                                        <p>Reach</p>
-                                        <p>React</p>
-                                        <p>Share</p>
-                                        <p>Massage</p>
-                                        <p>Report</p>
-                                        <p><?php echo e(Carbon\Carbon::parse(($post->approved) ? $post->approved : $post->created)->format(Config::get('siteSetting.date_format'))); ?></p>
-                                        <p>Views <?php echo e($post->views); ?></p>
-                                        <?php if($post->approved): ?>
-                                            <?php if(count($post->get_promotePackage)>0): ?>
-                                                <?php if(now() <= $post->get_promotePackage[0]->end_date): ?> 
-            
-                                                <div class="clockdiv" data-date="<?php echo e($post->get_promotePackage[0]->end_date); ?>">
-                                                  <div class="count_d">
-                                                    <span class="days">0</span><sub>D</sub>
-                                                  </div>
-                                                  <div class="count_d">
-                                                    <span class="hours">0</span><sub>H</sub>
-                                                    </div>
-                                                    <div class="count_d">
-                                                      <span class="minutes">0</span><sub>M</sub>
-                                                    </div>
-                                                    <div class="count_d">
-                                                      <span class="seconds">0</span><sub>S</sub>
-                                                    </div>
-                                                </div>
-                                                <?php endif; ?>
-                                            <?php endif; ?>
-                                        <?php endif; ?>
-                                        
+                                        <p>Price: <?php echo e(Config::get('siteSetting.currency_symble')); ?>. <?php echo e($post->price); ?></p>
+                                   
+                                        <p>React: <?php echo e($post->reacts_count); ?></p>
+                                        <p>Share: <?php echo e($post->share); ?></p>
+                                        <p>Massage: <?php echo e($post->messages_count); ?></p>
+                                        <p>Report: <?php echo e($post->reports_count); ?></p>
+                                        <p>Date: <?php echo e(Carbon\Carbon::parse(($post->approved) ? $post->approved : $post->created)->format(Config::get('siteSetting.date_format'))); ?></p>
+                                        <p>Views: <?php echo e($post->views); ?></p>
                                         <?php if($post->status == 'Not posted'): ?>
                                             <?php $last_free_post = App\Models\Product::where('subcategory_id', $post->subcategory_id)->where('user_id', $post->user_id)->where('id', '!=', $post->id)->orderBy('created_at', 'desc')->where('ad_type', 'free')->first();
                                             $days = 0;
@@ -93,12 +71,6 @@
                                             $free_ads_duration = App\Models\SiteSetting::where('type', 'free_ads_limit')->first();
         
                                             ?>
-                                            
-                                            <?php if($free_ads_duration->status != 1 || $days >= $free_ads_duration->value ): ?>
-                                            <p style="font-size:15px;color: green">Now available free post.</p>
-                                            <?php else: ?>
-                                            <!-- <p style="font-size:15px;color: red">Wait <?php echo e($free_ads_duration->value - $days); ?> days to post for free or pay to post now.</p> -->
-                                            <?php endif; ?>
                                         <?php else: ?>
                                             <?php if($post->reject_reason): ?>
                                             <p style="font-size:15px;color: red"><?php echo e($post->reject_reason); ?></p>
@@ -111,10 +83,12 @@
                                         <span class="post-status badge <?php if($post->status == 'reject'): ?>  badge-danger <?php elseif($post->status == 'Not posted'): ?> badge-danger <?php elseif($post->status == 'active'): ?> badge-success <?php else: ?> badge-info <?php endif; ?>"> <?php echo e($post->status); ?> </span>
                                         
                                     </div>
-                                    <div class="actionBtn">
+                                    <div>
                                         <a title="Edit ads" href="<?php echo e(route('post.edit', $post->slug)); ?>"><i class="fa fa-pencil-alt"></i> Edit</a>
+                                    </div>
+                                    <div>
                                         <a href="javascript:void(0)" style="color:red;"  onclick='deleteModal(<?php echo e($post->id); ?>)' ><i class="fa fa-trash"></i> Delete</a> 
-                                    </div> 
+                                    </div>
                                     <div >
                                         <?php if($post->status == 'reject'): ?>
                                         <a class="btn btn-danger btn-sm" title="Edit ads" href="<?php echo e(route('post.edit', $post->slug)); ?>"><i class="ti-pencil-alt"></i> Edit Post</a>
@@ -125,12 +99,14 @@
         
                                         <?php elseif($post->status == 'Not posted' || $post->status == 'draft'): ?>
                                         <a class="bt btn-primary btn-sm" title="Wait for free or promote ads" href="<?php echo e(route('post.edit', $post->slug)); ?>?status=post-now"><i class="ti-pencil-alt"></i>Continue Editing</a>
+                                        <?php else: ?>
+                                        <a class="bt btn-warning btn-sm" title="Promote ads" href="<?php echo e(route('ads.promotePackage', $post->slug)); ?>"><i class="ti-pencil-alt"></i><?php if(count($post->get_promotePackage)>0): ?> Boosted <?php else: ?> Boost Ad <?php endif; ?></a>
                                         <?php endif; ?>
                                      </div>                                    
                                 </td>
                             </tr>
                             <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
-                            <tr style="margin: 5px"><?php echo e($posts->appends(request()->query())->links()); ?></tr>
+                            <tr style="margin: 5px"><td colspan="4"><?php echo e($posts->appends(request()->query())->links()); ?></td></tr>
                         </tbody>
                     </table>
                 </div>

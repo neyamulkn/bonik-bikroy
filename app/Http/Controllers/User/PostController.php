@@ -32,9 +32,8 @@ class PostController extends Controller
 {
     use CreateSlug;
     public function index(Request $request, string $status=null){
-        $posts = Product::with('get_promotePackage')->where('user_id', Auth::id())->whereNotIn('status', ['not posted'])->orderBy('id', 'desc');
-        $data['reasons'] = ReportReason::where('type', 'product-delete')->where('status', 1)->get();
-
+        $posts = Product::with('get_promotePackage')->withCount(["messages", "reports", "reacts"])->where('user_id', Auth::id())->whereNotIn('status', ['not posted'])->orderBy('id', 'desc');
+        
         if($status){
             if($status == 'image-missing'){
                 $posts->where('feature_image', null);
@@ -51,6 +50,7 @@ class PostController extends Controller
             $posts->where('title', 'LIKE', '%'. $request->title .'%');
         }
         $data['posts'] = $posts->paginate(15);
+        $data['reasons'] = ReportReason::where('type', 'product-delete')->where('status', 1)->get();
 
         return view('users.post.index')->with($data);
     }
@@ -94,7 +94,7 @@ class PostController extends Controller
                 //Resize image
                 $img = Image::make($image->getRealPath())->orientate()->resize(670, 475, function($constraint){
                     $constraint->aspectRatio();
-                })->resizeCanvas(670, 475, 'center', false, 'fff');
+                })->resizeCanvas(670, 475, 'center', false, 'e7ecee');
 
                 if(config('siteSetting.watermark')){
                 //Add water mark in image
@@ -128,7 +128,7 @@ class PostController extends Controller
                     //Resize image
                     $img = Image::make($image->getRealPath())->orientate()->resize(670, 475, function($constraint){
                         $constraint->aspectRatio();
-                    })->resizeCanvas(670, 475, 'center', false, 'fff');
+                    })->resizeCanvas(670, 475, 'center', false, 'e7ecee');
 
                     if(config('siteSetting.watermark')){
                     //Add water mark in image
@@ -328,7 +328,7 @@ class PostController extends Controller
             //Resize image
             $img = Image::make($image->getRealPath())->orientate()->resize(670, 475, function($constraint){
                 $constraint->aspectRatio();
-            })->resizeCanvas(670, 475, 'center', false, 'fff');
+            })->resizeCanvas(670, 475, 'center', false, 'e7ecee');
 
             if(config('siteSetting.watermark')){
             //Add water mark in image
@@ -427,7 +427,7 @@ class PostController extends Controller
             $data->negotiable = ($request->negotiable ? 1 : 0);
             $data->sale_type = ($request->sale_type ? $request->sale_type : null);
             $data->contact_name = ($request->contact_name) ? $request->contact_name : null;
-            $data->contact_mobile = ($request->contact_mobile) ? json_encode($request->contact_mobile) : null;
+            $data->contact_mobile = ($request->contact_mobile) ? json_encode($request->contact_mobile, true) : null;
             $data->contact_email = ($request->contact_email) ? $request->contact_email : null;
             $data->contact_hidden = ($request->contact_hidden) ? 1 : 0;
             $data->meta_keywords = ($request->meta_keywords) ? implode(',', $request->meta_keywords) : null;

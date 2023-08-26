@@ -17,9 +17,8 @@ class CreateSellerVerificationsTable extends Migration
             $table->id();
             $table->integer('seller_id');
             $table->string('membership', 25)->nullable();
-            $table->dateTime('verify_date')->nullable();
             $table->dateTime('end_date')->nullable();
-            $table->float('amount')->nullable();
+            $table->dateTime('verify_date')->nullable();
             $table->string('name', 255)->nullable();
             $table->string('shop_name', 255)->nullable();
             $table->string('shop_about', 225)->nullable();
@@ -31,7 +30,7 @@ class CreateSellerVerificationsTable extends Migration
             $table->string('trade_license', 255)->nullable();
             $table->string('trade_license2', 255)->nullable();
             $table->string('trade_license3', 255)->nullable();
-            $table->time('open_time')->nullable();
+            $table->time('open_time')->nullable(); 
             $table->time('close_time')->nullable();
             $table->string('open_days', 75)->nullable();
             $table->integer('country')->nullable();
@@ -39,7 +38,8 @@ class CreateSellerVerificationsTable extends Migration
             $table->integer('city')->nullable();
             $table->integer('area')->nullable();
             $table->string('address')->nullable();
-            $table->tinyInteger('activation')->default(0);
+            $table->string('reject_reason')->nullable();
+            $table->string('status')->default("pending");
             $table->timestamps();
         });
     }

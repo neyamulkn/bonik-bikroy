@@ -90,10 +90,10 @@
                         </p>
                     </div>
                     <div class="d-flex align-items-center">
-                        <button type="button" <?php if(Auth::check()): ?> onclick="addToWishlist(<?php echo e($post_detail->id); ?>)" data-toggle="tooltip" <?php else: ?> data-toggle="modal" data-target="#so_sociallogin" <?php endif; ?> class="wish yb p-2 rounded borders mr-2 sh">
-                            <img width="25" height="25" src="<?php echo e(asset('upload/images/share.svg')); ?>" alt="share"
+                        <button type="button" id="shareBtn" data-toggle="modal" data-target="#ad-share" class="wish yb p-2 rounded borders mr-2 sh">
+                            <img width="25" height="25" src="<?php echo e(asset('upload/images/share.svg')); ?>" alt="share">
                         </button>
-                        <button type="button" data-toggle="modal" data-target="#ad-share" class="yb p-2 rounded borders sh">
+                        <button type="button"  <?php if(Auth::check()): ?> onclick="addToWishlist(<?php echo e($post_detail->id); ?>)" data-toggle="tooltip" <?php else: ?> data-toggle="modal" data-target="#so_sociallogin" <?php endif; ?> class="yb p-2 rounded borders sh">
                              <img width="25" height="25" src="<?php echo e(asset('upload/images/heart.svg')); ?>" alt="heart">
                         </button>
                     </div>
@@ -279,8 +279,8 @@
                     <?php endif; ?>
                 </a>
                 <div class="d-flex align-items-center bb2 rounded shadow w-100">
-                    <input type="text" class="px-2 py-1 w-100 rounded" placeholder="Username">
-                    <button><img height="23" src="<?php echo e(asset('upload/images/chat2.png')); ?>"></button>
+                    <input type="text" name="message" id="message<?php echo e($related_product->id); ?>" class="px-2 py-1 w-100 rounded" placeholder="Send message">
+                    <button <?php if(Auth::check()): ?> onclick="sendMessage(<?php echo e($related_product->id); ?>)" <?php else: ?> data-target="#so_sociallogin" data-toggle="modal" <?php endif; ?>><img height="23" src="<?php echo e(asset('upload/images/chat2.png')); ?>"></button>
                 </div>
             </div>
             <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
@@ -391,6 +391,38 @@
     }
     <?php endif; ?>
     $('article').readmore({speed: 500});
+
+
+    function sendMessage(product_id){
+    
+    var message = $('#message'+product_id).val();
+   
+      $.ajax({
+        url:'<?php echo e(route("user.sendMessage")); ?>',
+        type:'post',
+        data:{productOrConId:product_id,message:message,'_token':'<?php echo e(csrf_token()); ?>'},
+        success:function(data){
+            if(data){
+                $('#message'+product_id).val('');
+                toastr.success('Message send success.');
+            }else{
+                toastr.error('Message send failad.');
+            }
+          }
+      });
+    }
+
+
+    $(document).on("click", "#shareBtn", function(){
+
+        alert('fsd');
+        var ad_id = "<?php echo e($post_detail->id); ?>"
+        $.ajax({
+            method:'get',
+            url:'<?php echo e(route("shareAd")); ?>',
+            data:{ ad_id:ad_id }
+        });
+    });
 </script>   
 <?php $__env->stopSection(); ?> 
 <?php echo $__env->make('layouts.frontend', \Illuminate\Support\Arr::except(get_defined_vars(), ['__data', '__path']))->render(); ?><?php /**PATH C:\xampp\htdocs\bonik\resources\views/frontend/ads-details.blade.php ENDPATH**/ ?>

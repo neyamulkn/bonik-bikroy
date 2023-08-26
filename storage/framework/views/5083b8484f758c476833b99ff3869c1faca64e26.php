@@ -124,6 +124,7 @@
                                         <thead>
                                             <tr>
                                                 <th>Name</th>
+                                                <th>Creator</th>
                                                 <th>Type</th>
                                                 <th>Page</th>
                                                 <th>Position</th>
@@ -137,6 +138,7 @@
                                             <tr id="item<?php echo e($data->id); ?>">
 
                                                 <td><?php echo e($data->ads_name); ?></td>
+                                                <td><?php echo e(($data->customer) ? $data->customer->name : "Admin"); ?></td>
                                                 <td><?php echo e($data->adsType); ?></td>
                                                 <td><?php echo e($data->page); ?></td>
                                                 <td>
@@ -222,6 +224,18 @@
                                             <div class="form-group"><label for="adsType required">Select Advertisement Type</label><select name="adsType" onchange="adsTypes(this.value)" required="required" id="adsType" class="form-control custom-select"><option value="">Select Type</option><option value="google" > Google Adsense</option><option value="image" >Image Ads</option><option value="others">Others Ads</option></select></div>
                                         </div>
                                         <div class="col-md-12" id="showAdsType"></div>
+                                        <div class="col-md-6">
+                                             <div class="form-group">
+                                            <label>Start date</label>
+                                                <input type="date" required min="<?php echo e(date('Y-m-d')); ?>" name="start_date" id="start_date" class="form-control">
+                                                </div>
+                                        </div>
+                                        <div class="col-md-6">
+                                             <div class="form-group">
+                                            <label>End date</label>
+                                            <input type="date" required min="<?php echo e(Carbon\Carbon::parse(now())->addDay()->format('Y-m-d')); ?>" name="end_date" id="end_date" placeholder="link" class="form-control"></div>
+
+                                        </div>
                                         <div class="col-md-6">
                                             <div class="form-group">
                                                 <label for="position">Desktop Position</label>

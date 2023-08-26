@@ -43,8 +43,7 @@
     <section class="user-area">
         <div class="container">
             <div class="row">
-                <!--Right Part Start -->
-                @include('users.inc.sidebar')
+               
                 <!--Middle Part Start-->
                 <div class="col-md-12 sticky-conent">
                     @if($product->status == 'reject')
@@ -279,92 +278,19 @@
                                         <span id="moreMobile"><a onclick="moreMobile()" href="javascript:void(0)">Add another mobile number</a></span>
                                     </div>
                                     
-                                    <label><input id="contact_hidden" @if($product->contact_hidden == 1) checked @endif name="contact_hidden" type="checkbox" value="1"> Hide mobile number(s)</label>
+                                    <input id="contact_hidden" @if($product->contact_hidden == 1) checked @endif name="contact_hidden" type="checkbox" value="1">
+                                    <label for="contact_hidden">Hide mobile number(s)</label>
+                                    
                                 </div>
                             </div>
-                        </div>
-                        <div class="adpost-card">
-                            <div class="row offset-md-2">
-                                @if(count($packageTypes)>1)
-                                <div class="col-md-10">
-                                    <div class="adpost-title" style="text-align: center;">
-                                        <h3 >Promote your ad</h3>
-                                        <p>Want to sell faster choose one of the following options to post your ad</p>
-                                    </div>
-                                    <ul class="adpost-plan-list">
-                                        @php $activePackage = null; @endphp
-                                        @foreach($packageTypes as $package)
-                                        @if(count($package->get_purchasePackages)>0 || count($package->get_packageVlues)>0)
-                                            @php $activePackage = 1; @endphp
-                                            @if(count($package->get_purchasePackages)>0)
-                                                       
-                                            <label class="packageBox" for="package{{$package->id}}">
-
-                                                <div class="adpost-plan-content purchasPackvalue">
-                                                    <h6 style="display: flex;"> <input  type="checkbox" value="{{$package->id}}" name="package[]" id="package{{$package->id}}"> <span style="background: {{$package->background_color}}; color:{{$package->text_color}};margin-left: 8px; padding: 5px 5px;border-radius: 3px;"> {{$package->name}} </span></h6>
-                                                    <p class="package_details">{{$package->details}}  @if($package->promote_demo) <a onclick="promteDemo('{!! $package->id !!}')" href="javascript:void(0)"><i class="fa fa-eye"></i> See Example</a>@endif</p>
-                                                    
-                                                </div>
-                                                <div class="packageValueList">
-                                                     
-                                                        <select name="purchasPackvalue[{{$package->id}}]">
-                                                        @foreach($package->get_purchasePackages as $index => $packageValue)
-
-                                                        <option value="{{$packageValue->id}}">{{$packageValue->duration}} days  - {{config('siteSetting.currency_symble') . $packageValue->price}}</option>
-                                                       
-                                                        @endforeach
-                                                        </select>
-                                                   
-                                                </div>
-                                            </label>
-                                            @else
-                                            <label class="packageBox" for="package{{$package->id}}">
-
-                                                <div class="adpost-plan-content package">
-                                                    <h6 style="display: flex;"> <input onclick="packageBox()" type="checkbox" value="{{$package->id}}" name="package[]" id="package{{$package->id}}"> <span style="background: {{$package->background_color}}; color:{{$package->text_color}};margin-left: 8px; padding: 5px 5px;border-radius: 3px;"> {{$package->name}} </span></h6>
-                                                    <p class="package_details">{{$package->details}}  @if($package->promote_demo) <a onclick="promteDemo('{!! $package->id !!}')" href="javascript:void(0)"><i class="fa fa-eye"></i> See Example</a>@endif</p>
-                                                    
-                                                </div>
-                                                <div class="packageValueList">
-                                                   
-                                                        <select name="packageValue[{{$package->id}}]" onchange="packageBox()" class ="packvalue">
-                                                        @foreach($package->get_packageVlues as $index => $packageValue)
-                                                        <option data-price="{{$packageValue->price}}" data-package="{{$package->id}}" value="{{$packageValue->id}}">{{$packageValue->duration}} days - {{config('siteSetting.currency_symble') . $packageValue->price}} </option>
-
-                                                        @endforeach
-                                                        </select>
-                                                    
-                                                </div>
-                                            </label>
-
-                                            @endif
-                                        @endif
-                                        @endforeach
-
-                                        @if($activePackage)
-                                        <label class="packageBox" for="allCheck">
-
-                                        <div class="adpost-plan-content">
-                                            <h6 style="display: flex;"> <input  type="checkbox" id="allCheck"><span style="padding: 5px;"> Select all </span></h6>
-                                        </div></label>@endif
-                                    </ul>
-                                </div>
-                                @endif
-                                <div class="col-md-10">
-                                    @php $ads_fee = ($subcategory && $subcategory->post_fee > 0) ? $subcategory->post_fee : 0; @endphp
-                                    <input type="hidden" class="postPrice" value="{{$ads_fee}}" name="postPrice">
-                                    <div style="display: flex;background: #585252;color: #fff;padding: 5px;     justify-content: space-between;margin-bottom: 5px;"><strong>Total</strong> <p id="TotalPrice">@if($ads_fee > 0) {{config('siteSetting.currency_symble').$ads_fee}}  @else Free @endif</p></div>
-                               
-                                <div class="form-group text-right">
-                                    <button style="width: 100%;" class="btn btn-inline">
-                                        <i class="fas fa-check-circle"></i>
-                                        <span>Update Your Ad</span>
-                                    </button>
-                                </div>
-                                </div>
+                            <div class="form-group text-right">
+                                <button style="width: 100%;" class="btn btn-inline">
+                                    <i class="fas fa-check-circle"></i>
+                                    <span>Update Your Ad</span>
+                                </button>
                             </div>
                         </div>
-                        
+                        </div>
                     </form>
                     </div>
                 </div>
@@ -459,7 +385,7 @@
         <div>
         Add mobile number
         <div style="position: relative;margin-right: 10px;width: 300px;">
-        <input type="number" id="number" value="`+number+`" required name="contact_mobile" class="form-control" placeholder="Enter your number">
+        <input type="number" id="number" value="`+number+`" required name="mobile" class="form-control" placeholder="Enter your number">
         <span class="adjust-field" onclick="addNumber()"> Add</span>
         </div>
         </div>
@@ -508,45 +434,6 @@
             moreMobile();
        }
     }
-
-        function packageBox(){
-        var total = {{$ads_fee}};
-
-        $('.package :checked').each(function () {
-        var packageId = (this.checked ? $(this).val() : "");
-        
-        $('.packvalue :selected').each(function () {
-
-            if($(this).data('package') == packageId){
-                var price = $(this).data('price');
-                total = parseInt(total) + parseInt(price);
-            }
-
-            });
-        });
-
-        if(total > 0){
-            $('#TotalPrice').html("{{config('siteSetting.currency_symble')}}" + total);
-            $('.postPrice').val(total);
-        }else{
-            $('#TotalPrice').html('Free');
-        }
-
-        if($('.package :checked').length == $('.package').length){
-            $('#allCheck').prop('checked', true); 
-        }else{
-            $('#allCheck').prop('checked', false); 
-        }
-
-       
-    }
-
-    $("#allCheck").click(function(){
-       
-        $('.package input:checkbox').not(this).prop('checked', this.checked);
-        $('.purchasPackvalue input:checkbox').not(this).prop('checked', this.checked);
-        packageBox();
-    });
 
     </script>
 @endsection

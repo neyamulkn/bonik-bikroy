@@ -183,7 +183,7 @@ opacity: 0.7;
                 
                 <div class="form-group">
                     <label class="required">Description</label>
-                    <textarea name="description" required class="summernote form-control" rows="4" maxlength="5000" placeholder="Describe your message">{{old('description')}}</textarea>
+                    <textarea name="description" required class="summernote form-control" rows="4" placeholder="Describe your message">{{old('description')}}</textarea>
                     <p>Max 5000 character</p>
                 </div>
             </div>
@@ -230,7 +230,7 @@ opacity: 0.7;
                                 <div>
                                     Add mobile number
                                     <div style="position: relative;margin-right: 10px;width: 300px;">
-                                        <input type="number" id="number" value="number" required name="contact_mobile" class="form-control" placeholder="Enter your number">
+                                        <input type="number" id="number" value="number" required name="mobile" class="form-control" placeholder="Enter your number">
                                         <div class="adjust-field" onclick="addNumber()"> Add</div>
                                     </div>
                                 </div>
@@ -356,7 +356,7 @@ opacity: 0.7;
         <div>
         Add mobile number
         <div style="position: relative;margin-right: 10px;width: 300px;">
-        <input type="number" id="number" value="`+number+`" required name="contact_mobile" class="form-control" placeholder="Enter your number">
+        <input type="number" id="number" value="`+number+`" required name="mobile" class="form-control" placeholder="Enter your number">
         <span class="adjust-field" onclick="addNumber()"> Add</span>
         </div>
         </div>

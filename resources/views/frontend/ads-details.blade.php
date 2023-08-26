@@ -88,10 +88,10 @@
                         </p>
                     </div>
                     <div class="d-flex align-items-center">
-                        <button type="button" @if(Auth::check()) onclick="addToWishlist({{$post_detail->id}})" data-toggle="tooltip" @else data-toggle="modal" data-target="#so_sociallogin" @endif class="wish yb p-2 rounded borders mr-2 sh">
-                            <img width="25" height="25" src="{{ asset('upload/images/share.svg')}}" alt="share"
+                        <button type="button" id="shareBtn" data-toggle="modal" data-target="#ad-share" class="wish yb p-2 rounded borders mr-2 sh">
+                            <img width="25" height="25" src="{{ asset('upload/images/share.svg')}}" alt="share">
                         </button>
-                        <button type="button" data-toggle="modal" data-target="#ad-share" class="yb p-2 rounded borders sh">
+                        <button type="button"  @if(Auth::check()) onclick="addToWishlist({{$post_detail->id}})" data-toggle="tooltip" @else data-toggle="modal" data-target="#so_sociallogin" @endif class="yb p-2 rounded borders sh">
                              <img width="25" height="25" src="{{ asset('upload/images/heart.svg')}}" alt="heart">
                         </button>
                     </div>
@@ -274,8 +274,8 @@
                     @endif
                 </a>
                 <div class="d-flex align-items-center bb2 rounded shadow w-100">
-                    <input type="text" class="px-2 py-1 w-100 rounded" placeholder="Username">
-                    <button><img height="23" src="{{ asset('upload/images/chat2.png')}}"></button>
+                    <input type="text" name="message" id="message{{$related_product->id}}" class="px-2 py-1 w-100 rounded" placeholder="Send message">
+                    <button @if(Auth::check()) onclick="sendMessage({{$related_product->id}})" @else data-target="#so_sociallogin" data-toggle="modal" @endif><img height="23" src="{{ asset('upload/images/chat2.png')}}"></button>
                 </div>
             </div>
             @endforeach
@@ -386,5 +386,35 @@
     }
     @endif
     $('article').readmore({speed: 500});
+
+
+    function sendMessage(product_id){
+    
+    var message = $('#message'+product_id).val();
+   
+      $.ajax({
+        url:'{{route("user.sendMessage")}}',
+        type:'post',
+        data:{productOrConId:product_id,message:message,'_token':'{{ csrf_token() }}'},
+        success:function(data){
+            if(data){
+                $('#message'+product_id).val('');
+                toastr.success('Message send success.');
+            }else{
+                toastr.error('Message send failad.');
+            }
+          }
+      });
+    }
+
+
+    $(document).on("click", "#shareBtn", function(){
+        var ad_id = "{{ $post_detail->id }}"
+        $.ajax({
+            method:'get',
+            url:'{{route("shareAd")}}',
+            data:{ ad_id:ad_id }
+        });
+    });
 </script>   
 @endsection 

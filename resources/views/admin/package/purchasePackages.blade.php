@@ -126,6 +126,7 @@
                                     </tr>
                                 </thead>
                                 <tbody>
+
                                     @if(count($packages)>0)
                                         @foreach($packages as $index => $package)
                                         @php 

@@ -61,11 +61,12 @@
                                             <th>Name</th>
                                             <th>Mobile & Email</th>
                                            
-                                            <th>Posts</th>
-                                            
+                                            <th>Membership</th>
+                                          
                                             <th>NID</th>
                                             <th>Trade license</th>
                                             <th>Address</th>
+                                            
                                             <th>Verify</th>
                                         </tr>
                                     </thead> 
@@ -76,14 +77,17 @@
                                             <td>
                                             <?php if($customer->owner_photo): ?> <a class="popup-gallery" href="<?php echo e(asset('upload/users/'.$customer->owner_photo)); ?>"><img width="50" src="<?php echo e(asset('upload/users/'.$customer->owner_photo)); ?>"></a><?php endif; ?></td>
                                             <td>
-                                                <a style="display:flex;" class="dropdown-item" title="View Profile" href="<?php echo e(route('customer.profile', $customer->username)); ?>"> 
+                                                <a style="display:flex;" class="dropdown-item" title="View Profile" href="<?php echo e(route('customer.profile', $customer->user->username)); ?>"> 
 
                                                 <p style="padding-left: 3px"><?php echo e($customer->shop_name); ?><br>
                                                 <?php echo e($customer->name); ?></p>
                                                 </a>
                                             </td>
                                             <td><?php echo e($customer->mobile); ?> <br/> <?php echo e($customer->email); ?></td> 
-                                            <td><a href="<?php echo e(route('customer.profile', $customer->username)); ?>" class="label label-info"><?php echo e($customer->posts_count); ?></a></td>
+                                            <td><?php echo e(str_replace("-", " ", $customer->membership)); ?> (<?php echo e(($customer->amount > 0) ? "Premium" : "Free"); ?>)
+                                            </td>
+                                          
+                                            
                                             <td>
                                                 <a class="popup-gallery" href="<?php echo e(asset('upload/users/'.$customer->nid_front)); ?>"><img width="50" src="<?php echo e(asset('upload/users/'.$customer->nid_front)); ?>"></a>
                                                 <a class="popup-gallery" href="<?php echo e(asset('upload/users/'.$customer->nid_back)); ?>"><img width="50" src="<?php echo e(asset('upload/users/'.$customer->nid_back)); ?>"></a>
@@ -95,8 +99,9 @@
                                                 <?php if($customer->trade_license3): ?> <a class="popup-gallery" href="<?php echo e(asset('upload/users/'.$customer->trade_license3)); ?>"><img width="50" src="<?php echo e(asset('upload/users/'.$customer->trade_license3)); ?>"></a><?php endif; ?>
 
                                             </td>
-                                            <td><?php echo e($customer->address); ?></td>
-                                            <td onclick="customerStatus(<?php echo e($customer->id); ?>, 'verify')"> <?php if($customer->verify): ?> <span class="label label-success"> Verified </span> <?php else: ?> <span class="label label-danger">Unverify</span> <?php endif; ?></td>
+                                            <td> <?php echo e($customer->address); ?> <?php if($customer->get_city): ?>, <?php echo e($customer->get_city->name); ?> <?php endif; ?> <?php if($customer->get_state): ?>, <?php echo e($customer->get_state->name); ?> <?php endif; ?></td>
+                                            
+                                            <td onclick="customerStatus(<?php echo e($customer->seller_id); ?>, 'verify')"> <?php if($customer->status == 'active'): ?> <span class="label label-success"> Verified </span> <?php else: ?> <span class="label label-danger"><?php echo e($customer->status); ?></span> <?php endif; ?></td>
                                            
                                         </tr>
                                         <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>

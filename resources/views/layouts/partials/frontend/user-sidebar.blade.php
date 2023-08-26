@@ -30,7 +30,10 @@
                         <li><a href="{{route('post.list', 'pending')}}">Pending Ads</a></li>
                     </ul>
                 </li>
+                <li><a href="{{route('linkAds')}}"><i class="fa fa-clipboard-list"></i> Link Ads</a></li>
+                
                 <li><a href="{{route('user.packageHistory')}}"><i class="fa fa-clipboard-list"></i> My Package</a></li>
+
                 <li><a href="{{route('blog.list')}}"><i class="fa fa-pen-square"></i> Blogs</a></li>
                 <li><a href="{{route('user.message')}}"><i class="fa fa-comment"></i> Message</a></li>
                 <li><a href="{{route('wishlists')}}"><i class="fa fa-heart"></i> Wishlist</a></li>
