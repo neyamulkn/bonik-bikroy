@@ -80,45 +80,42 @@
                     
                             <div id="collapseOne" class="collapse show p-2" role="tabpanel" aria-labelledby="headingOne">
                                 <div class="d-flex align-items-center">
-                                    <input type="checkbox" name="ad" id="Urgent" value="urgent">
-                                    <label class="iy" for="Urgent">Urgent Ad</label>
-                                </div>
-                                <div class="d-flex align-items-center">
-                                    <input type="checkbox" name="ad" value="pin" id="Pin">
+                                    <input type="checkbox" name="ad" value="pin" @if(in_array("pin", explode(',', Request::get('ad')))) checked @endif class="common_selector package" id="Pin">
                                     <label class="iy" for="Pin">Pin Ad</label>
                                 </div>
                                 <div class="d-flex align-items-center">
-                                    <input type="checkbox" name="ad" value="highlight" id="highlight">
+                                    <input type="checkbox" name="ad" id="Urgent" @if(in_array("urgent", explode(',', Request::get('ad')))) checked @endif class="common_selector package" value="urgent">
+                                    <label class="iy" for="Urgent">Urgent Ad</label>
+                                </div>
+                                
+                                <div class="d-flex align-items-center">
+                                    <input type="checkbox" name="ad" value="highlight" @if(in_array("highlight", explode(',', Request::get('ad')))) checked @endif class="common_selector package" id="highlight">
                                     <label class="iy" for="highlight">Highlight Ad</label>
                                 </div>
                                 <div class="d-flex align-items-center">
-                                    <input type="checkbox" name="ad" value="fast" id="fast">
+                                    <input type="checkbox" name="ad" value="fast" @if(in_array("fast", explode(',', Request::get('ad')))) checked @endif class="common_selector package" id="fast">
                                     <label class="iy" for="fast">Fast Ad</label>
                                 </div>
 
                                 <div class="d-flex align-items-center">
-                                    <input type="checkbox" name="ad" value="featured" id="Featured">
-                                    <label class="iy" for="Featured">Featured Ad</label>
+                                    <input type="checkbox" name="member" value="member" @if(in_array("member", explode(',', Request::get('member')))) checked @endif class="common_selector member" id="member">
+                                    <label class="iy" for="member">Member Bonik</label>
                                 </div>
                                 <div class="d-flex align-items-center">
-                                    <input type="checkbox" name="ad" id="Urgent">
-                                    <label class="iy" for="Urgent">Member Bonik</label>
+                                    <input type="checkbox" name="member" value="verified" @if(in_array("verified", explode(',', Request::get('member')))) checked @endif class="common_selector member" id="verified">
+                                    <label class="iy" for="verified">Verified Bonik</label>
                                 </div>
                                 <div class="d-flex align-items-center">
-                                    <input type="checkbox" name="ad" id="Urgent">
-                                    <label class="iy" for="Urgent">Verified Bonik</label>
+                                    <input type="checkbox" name="member" value="dealer" @if(in_array("dealer", explode(',', Request::get('member')))) checked @endif class="common_selector member" id="dealer">
+                                    <label class="iy" for="dealer">Dealers Bonik</label>
                                 </div>
                                 <div class="d-flex align-items-center">
-                                    <input type="checkbox" name="ad" id="Urgent">
-                                    <label class="iy" for="Urgent">Dealers Bonik</label>
+                                    <input type="checkbox" name="agent" value="agent" @if(in_array("agent", explode(',', Request::get('member')))) checked @endif class="common_selector member" id="agent">
+                                    <label class="iy" for="agent">Agent Bonik</label>
                                 </div>
                                 <div class="d-flex align-items-center">
-                                    <input type="checkbox" name="Urgent" id="Urgent">
-                                    <label class="iy" for="Urgent">Agent Bonik</label>
-                                </div>
-                                <div class="d-flex align-items-center">
-                                    <input type="checkbox" name="ad" id="Urgent">
-                                    <label class="iy" for="Urgent">Wholesale Bonik</label>
+                                    <input type="checkbox" name="member" value="wholesale" @if(in_array("wholesale", explode(',', Request::get('member')))) checked @endif class="common_selector member" id="wholesale">
+                                    <label class="iy" for="wholesale">Wholesale Bonik</label>
                                 </div>
                             </div>
                         </div>
@@ -385,10 +382,22 @@
             }  
         @endforeach
        
+        
+
+        var package = get_filter('package');
+        if(package != '' ){
+            concatUrl += '&ad='+package;
+        }  
+
+        var member = get_filter('member');
+        if(member != '' ){
+            concatUrl += '&member='+member;
+        }     
+
         var brand = get_filter('brand');
         if(brand != '' ){
             concatUrl += '&brand='+brand;
-        }        
+        }    
        
         var perPage = null;
         var showItem = $("#perPage :selected").val();

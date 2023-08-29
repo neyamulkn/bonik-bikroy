@@ -414,8 +414,6 @@
 
 
     $(document).on("click", "#shareBtn", function(){
-
-        alert('fsd');
         var ad_id = "<?php echo e($post_detail->id); ?>"
         $.ajax({
             method:'get',

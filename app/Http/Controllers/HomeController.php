@@ -124,7 +124,7 @@ class HomeController extends Controller
                     $bannerAds->where('price', '<=', $price_max);
                 }
                 $data["bannerAds"] = $bannerAds->inRandomOrder()->take(7)->where('products.status', 'active')->where('promote_ads.status', 1)->selectRaw("products.title, products.id,products.slug,products.feature_image,products.price, sale_type, post_type, ads_id, packages.ribbon, states.name as state_name, users.name,users.username")->get();
-
+ 
             //get pin promote ads by category
             $pinAds = PromoteAds::join("users", "users.id", "promote_ads.user_id")->join("products", "products.id", "promote_ads.ads_id")->join("states", "states.id", "products.state_id")->join("packages", "packages.id", "promote_ads.package_id")->where('package_id', 3)->where('start_date', '<=', now())->where('end_date', '>=', now());
 
@@ -296,10 +296,20 @@ class HomeController extends Controller
                     $query->where('category_id', $category_id)->orWhere('subcategory_id', $category_id )->orWhere('childcategory_id', $category_id);
                 });
             }
+
+            if($request->member){
+                if (!is_array($request->member)) { // direct url tags
+                    $member = explode(',', $request->member);
+                } else { // filter by ajax
+                    $member = implode(',', $request->member);
+                }
+                $products->where('users.membership', $member);
+            }
           
             if($state_id){
                 $products->where('state_id', $state_id);
-            }if($city_id){
+            }
+            if($city_id){
                 $products->where('city_id', $city_id);
             }
 
